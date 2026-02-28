@@ -21,6 +21,33 @@
   --frame-neutral: transparent;
 }
 
+[data-theme="dark"] {
+  --bg-base: #0F0F12;
+  --bg-surface: #1A1A20;
+  --bg-elevated: #242430;
+  --border: #2E2E3A;
+  --border-active: #44445A;
+  --text-primary: #F0F0F5;
+  --text-secondary: #B0B0C0;
+  --text-muted: #6A6A7A;
+  --accent: #818CF8;
+  --accent-hover: #6366F1;
+  --accent-muted: rgba(129, 140, 248, 0.12);
+  --score-high: #22C55E;
+  --score-mid: #FBBF24;
+  --score-low: #EF4444;
+  --frame-positive: rgba(34, 197, 94, 0.1);
+  --frame-negative: rgba(239, 68, 68, 0.1);
+  --frame-neutral: transparent;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #3A3A4A;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #4A4A5A;
+}
+
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg-base);
@@ -29,6 +56,14 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body, div, span, p, h1, h2, h3, h4, h5, h6,
+button, a, input, textarea, select, label,
+nav, header, footer, section, article, aside, main,
+li, ul, ol {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
 }
 
 * {

@@ -29,9 +29,20 @@ function ComparisonColumn({ neighborhood }) {
       {/* Categories */}
       <div className="space-y-3">
         {neighborhood.categories.map((cat) => (
-          <div key={cat.label} className="bg-[var(--bg-surface)] rounded-[10px] border border-[var(--border)] px-4 py-3">
+          <div key={cat.label} className={`bg-[var(--bg-surface)] rounded-[10px] border px-4 py-3 ${
+            cat.label === 'Sustainability' ? 'border-[#22C55E]/30' : 'border-[var(--border)]'
+          }`}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[13px] text-[var(--text-secondary)]">{cat.label}</span>
+              <span className="text-[13px] text-[var(--text-secondary)] flex items-center gap-1.5">
+                {cat.label === 'Sustainability' && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 22c5.523 0 7-6.477 7-12 0 0-3.5.5-7 3s-4.5 5-4.5 5" />
+                    <path d="M5 14c2.5-2.5 5-3.5 7-3.5" />
+                    <path d="M12 22V10" />
+                  </svg>
+                )}
+                {cat.label}
+              </span>
               <span
                 className="text-[14px] font-semibold"
                 style={{ color: getScoreColor(cat.score) }}
@@ -195,6 +206,57 @@ export default function ComparePage() {
             </p>
           </motion.div>
         )}
+
+        {/* Carbon savings insight */}
+        {comparedNeighborhoods.length === 2 && (() => {
+          const a = comparedNeighborhoods[0]
+          const b = comparedNeighborhoods[1]
+          const getSusFactor = (n, name) => {
+            const sus = n.categories.find(c => c.label === 'Sustainability')
+            if (!sus) return null
+            return sus.factors.find(f => f.name === name)
+          }
+          const carbonA = getSusFactor(a, 'Carbon Footprint')?.score
+          const carbonB = getSusFactor(b, 'Carbon Footprint')?.score
+          const transitA = getSusFactor(a, 'Green Transit Score')?.score
+          const transitB = getSusFactor(b, 'Green Transit Score')?.score
+          const bikeA = getSusFactor(a, 'Bike Infrastructure')?.score
+          const bikeB = getSusFactor(b, 'Bike Infrastructure')?.score
+          if (carbonA == null || carbonB == null) return null
+
+          const avgA = (carbonA + (transitA || 0) + (bikeA || 0)) / 3
+          const avgB = (carbonB + (transitB || 0) + (bikeB || 0)) / 3
+          const diff = Math.abs(avgA - avgB)
+          const co2Saved = (diff * 0.08).toFixed(1)
+          const greener = avgA > avgB ? a : b
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 }}
+              className="mt-4 p-4 rounded-[10px] border"
+              style={{ borderColor: 'rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)' }}
+            >
+              <div className="flex items-start gap-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" className="flex-shrink-0 mt-0.5" aria-hidden="true">
+                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75" />
+                </svg>
+                <div>
+                  <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] mb-1.5" style={{ color: '#16A34A' }}>
+                    Carbon Savings Insight
+                  </h4>
+                  <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                    Choosing <strong>{greener.name}</strong> over {greener === a ? b.name : a.name} could save an estimated <strong style={{ color: '#16A34A' }}>{co2Saved} tons of CO₂ per year</strong> based on differences in carbon footprint ({carbonA} vs {carbonB}), green transit ({transitA} vs {transitB}), and bike infrastructure ({bikeA} vs {bikeB}) scores.
+                  </p>
+                  <p className="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">
+                    Estimate based on EPA household emissions data — each sustainability score point corresponds to approximately 0.08 metric tons CO₂/year, derived from the national average household footprint of 8.1 metric tons mapped across a 0–100 sustainability scale.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })()}
       </div>
     </div>
   )

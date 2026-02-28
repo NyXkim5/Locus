@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getScoreColor } from '../../utils/scoreColor'
+import useStore from '../../store/useStore'
 
 const lightStyle = [
   { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
@@ -12,13 +13,16 @@ const lightStyle = [
   { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#e2e2e7' }] },
 ]
 
-const mapOptions = {
-  disableDefaultUI: true,
-  zoomControl: true,
-  zoomControlOptions: { position: 3 },
-  styles: lightStyle,
-  backgroundColor: '#f0f0f3',
-}
+const darkStyle = [
+  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+  { elementType: 'geometry', stylers: [{ color: '#1A1A20' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#1A1A20' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#6A6A7A' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0F0F12' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#242430' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#2E2E3A' }] },
+]
 
 function formatPrice(price) {
   if (!price) return ''
@@ -44,12 +48,22 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const infoRef = useRef(null)
+  const theme = useStore((s) => s.theme)
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   })
 
   const center = { lat: coordinates.lat, lng: coordinates.lng }
+  const isDark = theme === 'dark'
+
+  const mapOptions = {
+    disableDefaultUI: true,
+    zoomControl: true,
+    zoomControlOptions: { position: 3 },
+    styles: isDark ? darkStyle : lightStyle,
+    backgroundColor: isDark ? '#1A1A20' : '#f0f0f3',
+  }
 
   const onLoad = useCallback((map) => {
     mapRef.current = map
@@ -59,6 +73,16 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
       })
     }
   }, [])
+
+  // Update map styles when theme changes
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.setOptions({
+        styles: isDark ? darkStyle : lightStyle,
+        backgroundColor: isDark ? '#1A1A20' : '#f0f0f3',
+      })
+    }
+  }, [isDark])
 
   // Create/update listing markers imperatively
   useEffect(() => {
@@ -139,7 +163,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
 
   if (!isLoaded) {
     return (
-      <div className="relative w-full h-full rounded-[10px] overflow-hidden border border-[var(--border)] min-h-[300px] bg-[var(--bg-elevated)] animate-pulse">
+      <div className="relative w-full rounded-[10px] overflow-hidden border border-[var(--border)] h-[250px] sm:h-[350px] md:h-full md:min-h-[400px] bg-[var(--bg-elevated)] animate-pulse">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-ping" />
@@ -151,7 +175,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
   }
 
   return (
-    <div className="relative w-full h-full rounded-[10px] overflow-hidden border border-[var(--border)] min-h-[300px] shadow-sm">
+    <div className="relative w-full rounded-[10px] overflow-hidden border border-[var(--border)] h-[250px] sm:h-[350px] md:h-full md:min-h-[400px] shadow-sm">
       <style>{`
         @keyframes marker-pulse {
           0%, 100% { box-shadow: 0 0 12px rgba(99,102,241,0.4); }
@@ -165,7 +189,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
       `}</style>
 
       <GoogleMap
-        mapContainerClassName="w-full h-full min-h-[300px]"
+        mapContainerClassName="w-full h-full"
         center={center}
         zoom={13}
         options={mapOptions}
@@ -189,7 +213,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
               borderRadius: '50%',
               background: 'var(--accent)',
               animation: 'marker-pulse 2s ease-in-out infinite',
-              border: '2.5px solid white',
+              border: '2.5px solid var(--bg-base)',
               cursor: 'pointer',
               transform: `translate(-50%, -50%) scale(${hovered ? 1.3 : 1})`,
               transition: 'transform 0.2s ease',
@@ -213,7 +237,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
                   exit={{ opacity: 0, y: 6, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   style={{
-                    background: 'white',
+                    background: 'var(--bg-base)',
                     padding: '8px 14px',
                     borderRadius: 10,
                     border: '1px solid var(--border)',
@@ -239,7 +263,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
         </OverlayViewF>
       </GoogleMap>
 
-      <div className="absolute bottom-3 left-3 px-2.5 py-1.5 bg-white/90 shadow-sm rounded-[6px]">
+      <div className="absolute bottom-3 left-3 px-2.5 py-1.5 bg-[var(--bg-base)]/90 shadow-sm rounded-[6px]">
         <span className="text-[13px] text-[var(--text-secondary)] font-medium">{name}</span>
         <span className="text-[12px] text-[var(--text-muted)] ml-2">
           {coordinates.lat.toFixed(2)}{'\u00b0'}{coordinates.lat >= 0 ? 'N' : 'S'}, {Math.abs(coordinates.lng).toFixed(2)}{'\u00b0'}{coordinates.lng >= 0 ? 'E' : 'W'}

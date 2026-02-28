@@ -5,7 +5,7 @@ import { recalculateFactor } from '../../engine/recalculate'
 import { getNeighborhoodById } from '../../data/neighborhoods'
 
 function getSourceColor(type) {
-  return type === 'measured' ? '#16A34A' : '#D97706'
+  return type === 'measured' ? 'var(--score-high)' : 'var(--score-mid)'
 }
 
 function ChallengePanelInner() {
@@ -13,6 +13,7 @@ function ChallengePanelInner() {
   const closeChallenge = useStore((s) => s.closeChallenge)
   const setChallengedFactor = useStore((s) => s.setChallengedFactor)
   const challengedFactors = useStore((s) => s.challengedFactors)
+  const showToast = useStore((s) => s.showToast)
   const [challengeText, setChallengeText] = useState('')
   const panelRef = useRef(null)
 
@@ -60,6 +61,7 @@ function ChallengePanelInner() {
     const updated = recalculateFactor(factor, direction)
     setChallengedFactor(challengeKey, updated)
     setChallengeText('')
+    showToast(`${factor.name} score adjusted ${direction === 'higher' ? 'up' : 'down'} to ${updated.score}`)
   }
 
   return (
@@ -152,7 +154,7 @@ function ChallengePanelInner() {
           <textarea
             id="challenge-input"
             value={challengeText}
-            onChange={(e) => setChallengeText(e.target.value)}
+            onChange={(e) => setChallengeText(e.target.value.slice(0, 500))}
             placeholder="I've lived/visited this area and believe..."
             className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[6px] p-3 text-[13px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none focus:border-[var(--accent)] transition-colors resize-none h-24"
           />

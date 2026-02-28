@@ -119,20 +119,6 @@ async function _fetch(neighborhoodId, location, apiKey, retries = 2) {
   return listings
 }
 
-export function clearListingsCache(neighborhoodId) {
-  if (neighborhoodId) {
-    memCache.delete(neighborhoodId)
-    try { localStorage.removeItem(`locus_listings_${neighborhoodId}`) } catch {}
-  } else {
-    memCache.clear()
-    try {
-      Object.keys(localStorage)
-        .filter((k) => k.startsWith('locus_listings_'))
-        .forEach((k) => localStorage.removeItem(k))
-    } catch {}
-  }
-}
-
 function formatType(raw) {
   const map = {
     single_family: 'House',

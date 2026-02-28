@@ -33,7 +33,7 @@ export default function EnhancedListingCard({ listing, animateMetrics }) {
             <span className="text-[40px] opacity-20">{'\u2302'}</span>
           </div>
         )}
-        <div className="absolute top-3 left-3 px-3 py-1.5 rounded-[6px] bg-white/90 shadow-sm">
+        <div className="absolute top-3 left-3 px-3 py-1.5 rounded-[6px] bg-[var(--bg-base)]/90 shadow-sm">
           <span className="text-[14px] font-medium text-[var(--text-secondary)]">{listing.type}</span>
         </div>
         <div className="absolute top-3 right-3 px-3 py-1.5 rounded-[6px] bg-[var(--accent)] shadow-sm">

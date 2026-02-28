@@ -41,7 +41,14 @@ export default function FramingToggle() {
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               />
             )}
-            <span className="relative z-10">{mode.label}</span>
+            <span className="relative z-10 flex items-center gap-1">
+              {framingMode === mode.key && (
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M2 6l3 3 5-5" />
+                </svg>
+              )}
+              {mode.label}
+            </span>
           </button>
         ))}
       </div>

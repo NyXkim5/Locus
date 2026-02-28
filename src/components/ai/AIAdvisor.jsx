@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { neighborhoods } from '../../data/neighborhoods'
+import useStore from '../../store/useStore'
 import ListingsCarousel from '../listings/ListingsCarousel'
 
 function Dropdown({ label, value, options, onChange }) {
@@ -81,6 +82,14 @@ const SUGGESTED_PROMPTS = [
   {
     label: 'Investor',
     prompt: "I'm looking to invest in rental property. Which neighborhood has the best property value trend, development pipeline, and job market growth?",
+  },
+  {
+    label: 'Eco-conscious buyer',
+    prompt: "I care deeply about sustainability. Show me homes in areas with low carbon footprint, great bike infrastructure, green transit, and renewable energy adoption. I want to minimize my environmental impact.",
+  },
+  {
+    label: 'Low-carbon lifestyle',
+    prompt: "I want to live car-free or car-light. Which neighborhoods have the best green transit scores, bike infrastructure, and walkability? Show me homes where I can reduce my carbon footprint the most.",
   },
 ]
 
@@ -186,11 +195,17 @@ function buildFilterContext(filters) {
 
 export default function AIAdvisor({ currentNeighborhood, listings = [], onResponse }) {
   const [input, setInput] = useState('')
+  const [refineInput, setRefineInput] = useState('')
   const [response, setResponse] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [filters, setFilters] = useState({ priceRange: '', minBeds: '', minSqft: '' })
   const inputRef = useRef(null)
+  const refineRef = useRef(null)
+
+  const chatHistory = useStore((s) => s.chatHistory)
+  const addChatMessage = useStore((s) => s.addChatMessage)
+  const clearChatHistory = useStore((s) => s.clearChatHistory)
 
   const updateFilter = (key, value) => {
     setFilters((f) => ({ ...f, [key]: value }))
@@ -245,28 +260,50 @@ Guidelines:
 - recommendations: Recommend ALL listings from the active listings that are reasonable matches (up to 6). If the user specifies a number (e.g. "show me 5 homes"), respect that exact count. If the user set search filters (price, beds, sqft), only recommend listings that match those filters. Each address must match one from the active listings.
 - relevantMetrics: ALWAYS include 2-4 metrics per recommendation. Use scores from the neighborhood data (these are on a 0-100 scale). If the user mentions specific interests (walkability, safety, schools, etc.), prioritize those. For generic prompts, pick broadly useful metrics (Property Value Trend, Safety, Walkability, School Quality).
 - FAMILIES & KIDS: When the user mentions kids, children, family, or schools, you MUST include a "School Rating" metric for every recommendation. For school ratings specifically, use a X/10 scale (e.g. 9/10) to match the GreatSchools format — do NOT use the 0-100 scale for school ratings. In the explanation, name REAL specific nearby schools that actually exist in the area (e.g. "University High School", "Turtle Rock Elementary", "Northwood High School"). Mention their real GreatSchools rating as X/10, real college acceptance rates, AP course counts, or notable achievements. Do NOT make up school names or statistics — only reference schools you are confident actually exist in that city/neighborhood.
+- SUSTAINABILITY: When the user mentions sustainability, eco-friendly, carbon footprint, green living, bike infrastructure, or renewable energy, you MUST reference the Sustainability category scores and individual factors (Carbon Footprint, Green Transit Score, Bike Infrastructure, Renewable Energy, Green Space Coverage). Include sustainability-related metrics in your recommendations. Highlight how specific properties support a low-carbon lifestyle — proximity to bike lanes, transit stops, EV charging, solar panels, walkable errands. Compare sustainability scores across neighborhoods when useful.
 - REAL DATA ONLY: Never fabricate school names, ratings, statistics, or facts. Only reference real schools, real landmarks, and real amenities that exist in the area. If you are not confident a specific fact is accurate, describe it in general terms instead of making up numbers.
 - Score interpretation: 70+ is strong, 40-69 is moderate, below 40 is a red flag.
 - TONE: Be persuasive and enthusiastic. You are selling the buyer on each home. Use concrete details — nearby parks by name, walking distance to amenities, specific school names and stats, commute times to job centers. Make every explanation feel tailored and compelling.`
 
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            contents: [{ role: 'user', parts: [{ text }] }],
-            generationConfig: { responseMimeType: 'application/json' },
-          }),
-        }
-      )
+    // Build multi-turn contents: include prior history + new user message
+    const priorHistory = useStore.getState().chatHistory
+    const contents = [
+      ...priorHistory.map((msg) => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }],
+      })),
+      { role: 'user', parts: [{ text }] },
+    ]
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => null)
-        throw new Error(body?.error?.message || `API request failed (${res.status})`)
+    try {
+      const fetchWithRetry = async (retries = 2) => {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: systemPrompt }] },
+              contents,
+              generationConfig: { responseMimeType: 'application/json' },
+            }),
+          }
+        )
+
+        if (res.status === 429 && retries > 0) {
+          await new Promise((r) => setTimeout(r, 1500 * (3 - retries)))
+          return fetchWithRetry(retries - 1)
+        }
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => null)
+          throw new Error(body?.error?.message || `API request failed (${res.status})`)
+        }
+
+        return res
       }
+
+      const res = await fetchWithRetry()
 
       const json = await res.json()
       const aiText = json.candidates?.[0]?.content?.parts?.[0]?.text
@@ -275,13 +312,32 @@ Guidelines:
       const parsed = parseAIResponse(aiText)
       const enriched = enrichListings(listings, parsed.recommendations)
 
+      // Only store messages in history after successful response
+      addChatMessage('user', text)
+      addChatMessage('model', parsed.analysis)
+
       setResponse({ analysis: parsed.analysis, recommendations: parsed.recommendations })
+      setRefineInput('')
       onResponse?.({ analysis: parsed.analysis, recommendations: parsed.recommendations, enrichedListings: enriched })
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRefine = () => {
+    if (!refineInput.trim()) return
+    handleSubmit(refineInput)
+    setRefineInput('')
+  }
+
+  const handleClearConversation = () => {
+    clearChatHistory()
+    setResponse(null)
+    setRefineInput('')
+    setInput('')
+    setError(null)
   }
 
   const enrichedListings = response ? enrichListings(listings, response.recommendations) : []
@@ -295,11 +351,21 @@ Guidelines:
     >
       <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
         {/* Header */}
-        <div className="flex items-center gap-2.5 mb-1">
-          <div className="w-3 h-3 rounded-full bg-[var(--accent)]" />
-          <span className="text-[17px] font-semibold text-[var(--text-primary)]">
-            LOCUS AI
-          </span>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2.5">
+            <div className="w-3 h-3 rounded-full bg-[var(--accent)]" />
+            <span className="text-[17px] font-semibold text-[var(--text-primary)]">
+              LOCUS AI
+            </span>
+          </div>
+          {chatHistory.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] text-[11px] font-medium">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              {Math.ceil(chatHistory.length / 2)} turn{Math.ceil(chatHistory.length / 2) !== 1 ? 's' : ''} in memory
+            </span>
+          )}
         </div>
         <p className="text-[15px] text-[var(--text-muted)] mb-5">
           Set your preferences below, then describe your situation or pick a prompt
@@ -410,18 +476,78 @@ Guidelines:
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-5 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-5"
             >
-              {/* Left: Analysis */}
-              <div className="px-5 py-4 rounded-[10px] bg-[var(--bg-base)] border border-[var(--border)] max-h-[500px] overflow-y-auto shadow-sm">
-                <p className="text-[16px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
-                  {response.analysis}
-                </p>
+              {/* Conversation thread — show prior exchanges */}
+              {chatHistory.length > 2 && (
+                <div className="mt-5 mb-4 space-y-3">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]">
+                    Conversation History
+                  </span>
+                  {chatHistory.slice(0, -2).map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[80%] px-3.5 py-2.5 rounded-[10px] text-[13px] leading-relaxed ${
+                          msg.role === 'user'
+                            ? 'bg-[var(--accent-muted)] text-[var(--accent)] rounded-br-[4px]'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-bl-[4px]'
+                        }`}
+                      >
+                        {msg.role !== 'user' && (
+                          <span className="text-[10px] font-medium text-[var(--text-muted)] block mb-1">LOCUS AI</span>
+                        )}
+                        <p className="line-clamp-3">{msg.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="border-t border-[var(--border)] pt-1">
+                    <span className="text-[11px] text-[var(--text-muted)]">Latest response</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-5">
+                {/* Left: Analysis */}
+                <div className="px-5 py-4 rounded-[10px] bg-[var(--bg-base)] border border-[var(--border)] max-h-[500px] overflow-y-auto shadow-sm">
+                  <p className="text-[16px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
+                    {response.analysis}
+                  </p>
+                </div>
+
+                {/* Right: Carousel */}
+                <div className="min-w-0">
+                  <ListingsCarousel listings={enrichedListings} />
+                </div>
               </div>
 
-              {/* Right: Carousel */}
-              <div className="min-w-0">
-                <ListingsCarousel listings={enrichedListings} />
+              {/* Refine input */}
+              <div className="mt-4 flex items-center gap-2">
+                <input
+                  ref={refineRef}
+                  type="text"
+                  value={refineInput}
+                  onChange={(e) => setRefineInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !loading && handleRefine()}
+                  placeholder="Refine your search — ask a follow-up..."
+                  disabled={loading}
+                  aria-label="Refine your search with a follow-up question"
+                  className="flex-1 px-3 py-2.5 rounded-[8px] bg-[var(--bg-base)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none transition-colors disabled:opacity-60"
+                />
+                <button
+                  onClick={handleRefine}
+                  disabled={loading || !refineInput.trim()}
+                  className="px-4 py-2.5 rounded-[8px] bg-[var(--accent)] text-white text-[13px] font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Refine
+                </button>
+                <button
+                  onClick={handleClearConversation}
+                  className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
+                >
+                  Clear conversation
+                </button>
               </div>
             </motion.div>
           )}

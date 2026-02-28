@@ -9,6 +9,87 @@ export const neighborhoods = [
     overallScore: 78,
     categories: [
       {
+        label: "Sustainability",
+        score: 72,
+        factors: [
+          {
+            name: "Carbon Footprint",
+            score: 68,
+            confidence: 78,
+            sources: [
+              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 70, type: "measured" },
+              { name: "CoolClimate Network Calculator", weight: 0.35, value: 69, type: "measured" },
+              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 63, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Carbon Footprint: 68",
+              positive: "Better than 62% of Orange County suburbs for per-capita carbon emissions",
+              negative: "Falls behind 38% of comparable neighborhoods in carbon footprint reduction",
+            },
+          },
+          {
+            name: "Green Transit Score",
+            score: 58,
+            confidence: 76,
+            sources: [
+              { name: "OCTA Green Transit Assessment", weight: 0.4, value: 60, type: "measured" },
+              { name: "EPA Smart Location Database", weight: 0.35, value: 59, type: "measured" },
+              { name: "AI Green Commute Model", weight: 0.25, value: 53, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Transit Score: 58",
+              positive: "Better than 50% of suburban communities for eco-friendly transit options",
+              negative: "Falls behind 50% of comparable neighborhoods in green transportation access",
+            },
+          },
+          {
+            name: "Bike Infrastructure",
+            score: 74,
+            confidence: 82,
+            sources: [
+              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 76, type: "measured" },
+              { name: "City of Irvine Bike Master Plan Data", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Bike Infrastructure: 74",
+              positive: "Better than 71% of Southern California suburbs for cycling infrastructure",
+              negative: "Falls behind 29% of comparable neighborhoods in bike-friendliness",
+            },
+          },
+          {
+            name: "Renewable Energy",
+            score: 70,
+            confidence: 80,
+            sources: [
+              { name: "CA Energy Commission Local Data", weight: 0.4, value: 72, type: "measured" },
+              { name: "EIA State Electricity Profiles", weight: 0.35, value: 71, type: "measured" },
+              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 65, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Renewable Energy: 70",
+              positive: "Better than 64% of Orange County communities for renewable energy adoption",
+              negative: "Falls behind 36% of comparable neighborhoods in clean energy transition",
+            },
+          },
+          {
+            name: "Green Space Coverage",
+            score: 88,
+            confidence: 90,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 90, type: "measured" },
+              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 89, type: "measured" },
+              { name: "AI Green Coverage Model", weight: 0.25, value: 83, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Space Coverage: 88",
+              positive: "Better than 90% of Southern California neighborhoods for green space and tree canopy",
+              negative: "Falls behind 10% of comparable neighborhoods in urban green coverage",
+            },
+          },
+        ],
+      },
+      {
         label: "Livability",
         score: 81,
         factors: [
@@ -282,8 +363,89 @@ export const neighborhoods = [
     id: "santa-monica",
     name: "Santa Monica",
     coordinates: { lat: 34.0195, lng: -118.4912 },
-    overallScore: 84,
+    overallScore: 82,
     categories: [
+      {
+        label: "Sustainability",
+        score: 81,
+        factors: [
+          {
+            name: "Carbon Footprint",
+            score: 78,
+            confidence: 82,
+            sources: [
+              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 80, type: "measured" },
+              { name: "CoolClimate Network Calculator", weight: 0.35, value: 79, type: "measured" },
+              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 73, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Carbon Footprint: 78",
+              positive: "Better than 74% of coastal California cities for per-capita carbon emissions",
+              negative: "Falls behind 26% of comparable neighborhoods in carbon footprint reduction",
+            },
+          },
+          {
+            name: "Green Transit Score",
+            score: 86,
+            confidence: 88,
+            sources: [
+              { name: "LA Metro Green Transit Assessment", weight: 0.4, value: 88, type: "measured" },
+              { name: "EPA Smart Location Database", weight: 0.35, value: 87, type: "measured" },
+              { name: "AI Green Commute Model", weight: 0.25, value: 81, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Transit Score: 86",
+              positive: "Better than 88% of LA Westside communities for eco-friendly transit options",
+              negative: "Falls behind 12% of comparable neighborhoods in green transportation access",
+            },
+          },
+          {
+            name: "Bike Infrastructure",
+            score: 84,
+            confidence: 86,
+            sources: [
+              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 86, type: "measured" },
+              { name: "City of Santa Monica Bike Action Plan Data", weight: 0.35, value: 85, type: "measured" },
+              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 79, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Bike Infrastructure: 84",
+              positive: "Better than 85% of Southern California cities for cycling infrastructure and safety",
+              negative: "Falls behind 15% of comparable neighborhoods in bike-friendliness",
+            },
+          },
+          {
+            name: "Renewable Energy",
+            score: 79,
+            confidence: 84,
+            sources: [
+              { name: "CA Energy Commission Local Data", weight: 0.4, value: 81, type: "measured" },
+              { name: "EIA State Electricity Profiles", weight: 0.35, value: 80, type: "measured" },
+              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 74, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Renewable Energy: 79",
+              positive: "Better than 76% of coastal California communities for renewable energy adoption",
+              negative: "Falls behind 24% of comparable neighborhoods in clean energy transition",
+            },
+          },
+          {
+            name: "Green Space Coverage",
+            score: 77,
+            confidence: 85,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 79, type: "measured" },
+              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 78, type: "measured" },
+              { name: "AI Green Coverage Model", weight: 0.25, value: 72, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Space Coverage: 77",
+              positive: "Better than 73% of urban coastal neighborhoods for green space and tree canopy",
+              negative: "Falls behind 27% of comparable neighborhoods in urban green coverage",
+            },
+          },
+        ],
+      },
       {
         label: "Livability",
         score: 91,
@@ -558,8 +720,89 @@ export const neighborhoods = [
     id: "pasadena",
     name: "Pasadena",
     coordinates: { lat: 34.1478, lng: -118.1445 },
-    overallScore: 76,
+    overallScore: 74,
     categories: [
+      {
+        label: "Sustainability",
+        score: 68,
+        factors: [
+          {
+            name: "Carbon Footprint",
+            score: 65,
+            confidence: 79,
+            sources: [
+              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 67, type: "measured" },
+              { name: "CoolClimate Network Calculator", weight: 0.35, value: 66, type: "measured" },
+              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 60, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Carbon Footprint: 65",
+              positive: "Better than 58% of San Gabriel Valley cities for per-capita carbon emissions",
+              negative: "Falls behind 42% of comparable neighborhoods in carbon footprint reduction",
+            },
+          },
+          {
+            name: "Green Transit Score",
+            score: 72,
+            confidence: 83,
+            sources: [
+              { name: "LA Metro Green Transit Assessment", weight: 0.4, value: 74, type: "measured" },
+              { name: "EPA Smart Location Database", weight: 0.35, value: 73, type: "measured" },
+              { name: "AI Green Commute Model", weight: 0.25, value: 67, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Transit Score: 72",
+              positive: "Better than 67% of San Gabriel Valley communities for eco-friendly transit options",
+              negative: "Falls behind 33% of comparable neighborhoods in green transportation access",
+            },
+          },
+          {
+            name: "Bike Infrastructure",
+            score: 64,
+            confidence: 78,
+            sources: [
+              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 66, type: "measured" },
+              { name: "City of Pasadena Bicycle Master Plan Data", weight: 0.35, value: 65, type: "measured" },
+              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 59, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Bike Infrastructure: 64",
+              positive: "Better than 57% of LA County neighborhoods for cycling infrastructure",
+              negative: "Falls behind 43% of comparable neighborhoods in bike-friendliness",
+            },
+          },
+          {
+            name: "Renewable Energy",
+            score: 66,
+            confidence: 80,
+            sources: [
+              { name: "CA Energy Commission Local Data", weight: 0.4, value: 68, type: "measured" },
+              { name: "EIA State Electricity Profiles", weight: 0.35, value: 67, type: "measured" },
+              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 61, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Renewable Energy: 66",
+              positive: "Better than 59% of LA County communities for renewable energy adoption",
+              negative: "Falls behind 41% of comparable neighborhoods in clean energy transition",
+            },
+          },
+          {
+            name: "Green Space Coverage",
+            score: 74,
+            confidence: 85,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 76, type: "measured" },
+              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Green Coverage Model", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Space Coverage: 74",
+              positive: "Better than 70% of LA County neighborhoods for green space and tree canopy",
+              negative: "Falls behind 30% of comparable neighborhoods in urban green coverage",
+            },
+          },
+        ],
+      },
       {
         label: "Livability",
         score: 77,
@@ -834,8 +1077,89 @@ export const neighborhoods = [
     id: "west-hollywood",
     name: "West Hollywood",
     coordinates: { lat: 34.0900, lng: -118.3617 },
-    overallScore: 80,
+    overallScore: 79,
     categories: [
+      {
+        label: "Sustainability",
+        score: 75,
+        factors: [
+          {
+            name: "Carbon Footprint",
+            score: 74,
+            confidence: 80,
+            sources: [
+              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 76, type: "measured" },
+              { name: "CoolClimate Network Calculator", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Carbon Footprint: 74",
+              positive: "Better than 69% of dense urban LA neighborhoods for per-capita carbon emissions",
+              negative: "Falls behind 31% of comparable neighborhoods in carbon footprint reduction",
+            },
+          },
+          {
+            name: "Green Transit Score",
+            score: 82,
+            confidence: 86,
+            sources: [
+              { name: "LA Metro Green Transit Assessment", weight: 0.4, value: 84, type: "measured" },
+              { name: "EPA Smart Location Database", weight: 0.35, value: 83, type: "measured" },
+              { name: "AI Green Commute Model", weight: 0.25, value: 77, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Transit Score: 82",
+              positive: "Better than 80% of LA urban neighborhoods for eco-friendly transit options",
+              negative: "Falls behind 20% of comparable neighborhoods in green transportation access",
+            },
+          },
+          {
+            name: "Bike Infrastructure",
+            score: 77,
+            confidence: 83,
+            sources: [
+              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 79, type: "measured" },
+              { name: "City of West Hollywood Active Transport Data", weight: 0.35, value: 78, type: "measured" },
+              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 72, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Bike Infrastructure: 77",
+              positive: "Better than 74% of urban LA neighborhoods for cycling infrastructure",
+              negative: "Falls behind 26% of comparable neighborhoods in bike-friendliness",
+            },
+          },
+          {
+            name: "Renewable Energy",
+            score: 72,
+            confidence: 81,
+            sources: [
+              { name: "CA Energy Commission Local Data", weight: 0.4, value: 74, type: "measured" },
+              { name: "EIA State Electricity Profiles", weight: 0.35, value: 73, type: "measured" },
+              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 67, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Renewable Energy: 72",
+              positive: "Better than 66% of LA metro communities for renewable energy adoption",
+              negative: "Falls behind 34% of comparable neighborhoods in clean energy transition",
+            },
+          },
+          {
+            name: "Green Space Coverage",
+            score: 68,
+            confidence: 80,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 70, type: "measured" },
+              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 69, type: "measured" },
+              { name: "AI Green Coverage Model", weight: 0.25, value: 63, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Space Coverage: 68",
+              positive: "Better than 61% of dense urban neighborhoods for green space and tree canopy",
+              negative: "Falls behind 39% of comparable neighborhoods in urban green coverage",
+            },
+          },
+        ],
+      },
       {
         label: "Livability",
         score: 85,
