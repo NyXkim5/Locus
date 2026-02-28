@@ -19,7 +19,7 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
     <div
       className={`bg-[var(--bg-surface)] border rounded-[10px] overflow-hidden hover:border-[var(--border-active)] transition-colors ${
         category.label === 'Sustainability'
-          ? 'border-[#22C55E]/30 ring-1 ring-[#22C55E]/10'
+          ? 'border-[var(--color-sustainability-border)] ring-1 ring-[var(--color-sustainability-muted)]'
           : 'border-[var(--border)]'
       }`}
     >
@@ -32,7 +32,7 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
       >
         <span className="text-[14px] font-medium flex items-center gap-1.5">
           {category.label === 'Sustainability' && (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" strokeWidth="2" aria-hidden="true" style={{ stroke: 'var(--color-sustainability)' }}>
               <path d="M12 22c5-3 9-8.5 9-13a9 9 0 0 0-18 0c0 4.5 4 10 9 13z" />
               <path d="M12 11v6M9 14h6" />
             </svg>

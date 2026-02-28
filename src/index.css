@@ -16,6 +16,9 @@
   --score-high: #16A34A;
   --score-mid: #D97706;
   --score-low: #DC2626;
+  --color-sustainability: #22C55E;
+  --color-sustainability-muted: rgba(34, 197, 94, 0.1);
+  --color-sustainability-border: rgba(34, 197, 94, 0.3);
   --frame-positive: rgba(22, 163, 74, 0.1);
   --frame-negative: rgba(220, 38, 38, 0.1);
   --frame-neutral: transparent;
@@ -36,6 +39,9 @@
   --score-high: #22C55E;
   --score-mid: #FBBF24;
   --score-low: #EF4444;
+  --color-sustainability: #34D399;
+  --color-sustainability-muted: rgba(52, 211, 153, 0.12);
+  --color-sustainability-border: rgba(52, 211, 153, 0.3);
   --frame-positive: rgba(34, 197, 94, 0.1);
   --frame-negative: rgba(239, 68, 68, 0.1);
   --frame-neutral: transparent;
@@ -96,7 +102,13 @@ html {
   scroll-behavior: smooth;
 }
 
-*:focus-visible {
+*:focus-visible:not(input):not(textarea):not(select) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
 }

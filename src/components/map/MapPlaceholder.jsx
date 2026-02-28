@@ -178,8 +178,8 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
     <div className="relative w-full rounded-[10px] overflow-hidden border border-[var(--border)] h-[250px] sm:h-[350px] md:h-full md:min-h-[400px] shadow-sm">
       <style>{`
         @keyframes marker-pulse {
-          0%, 100% { box-shadow: 0 0 12px rgba(99,102,241,0.4); }
-          50% { box-shadow: 0 0 20px rgba(99,102,241,0.6), 0 0 40px rgba(99,102,241,0.2); }
+          0%, 100% { box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent); }
+          50% { box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 40px color-mix(in srgb, var(--accent) 20%, transparent); }
         }
         .gm-style-iw-c { background: var(--bg-base) !important; border: 1px solid var(--border) !important; border-radius: 10px !important; padding: 0 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important; }
         .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; }
@@ -217,7 +217,7 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
               cursor: 'pointer',
               transform: `translate(-50%, -50%) scale(${hovered ? 1.3 : 1})`,
               transition: 'transform 0.2s ease',
-              boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
+              boxShadow: '0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent)',
             }}
           />
         </OverlayViewF>

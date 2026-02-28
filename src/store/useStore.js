@@ -30,6 +30,19 @@ const useStore = create((set) => ({
   }),
   clearChatHistory: () => set({ chatHistory: [] }),
 
+  // ── Generated Neighborhoods ──
+  generatedNeighborhoods: (() => {
+    try {
+      const raw = localStorage.getItem('locus_generated_neighborhoods')
+      return raw ? JSON.parse(raw) : {}
+    } catch { return {} }
+  })(),
+  addGeneratedNeighborhood: (neighborhood) => set((state) => {
+    const next = { ...state.generatedNeighborhoods, [neighborhood.id]: neighborhood }
+    try { localStorage.setItem('locus_generated_neighborhoods', JSON.stringify(next)) } catch {}
+    return { generatedNeighborhoods: next }
+  }),
+
   // ── Favorites ──
   favorites: (() => {
     try {

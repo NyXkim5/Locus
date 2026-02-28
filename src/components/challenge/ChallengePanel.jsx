@@ -163,13 +163,19 @@ function ChallengePanelInner() {
         <div className="flex gap-2">
           <button
             onClick={() => handleRecalculate('higher')}
-            className="flex-1 py-2.5 rounded-[6px] text-[13px] font-medium bg-[rgba(52,211,153,0.12)] text-[var(--score-high)] hover:bg-[rgba(52,211,153,0.2)] transition-colors"
+            className="flex-1 py-2.5 rounded-[6px] text-[13px] font-medium text-[var(--score-high)] transition-colors"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--score-high) 12%, transparent)' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--score-high) 20%, transparent)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--score-high) 12%, transparent)'}
           >
             Should be higher
           </button>
           <button
             onClick={() => handleRecalculate('lower')}
-            className="flex-1 py-2.5 rounded-[6px] text-[13px] font-medium bg-[rgba(248,113,113,0.12)] text-[var(--score-low)] hover:bg-[rgba(248,113,113,0.2)] transition-colors"
+            className="flex-1 py-2.5 rounded-[6px] text-[13px] font-medium text-[var(--score-low)] transition-colors"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--score-low) 12%, transparent)' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--score-low) 20%, transparent)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--score-low) 12%, transparent)'}
           >
             Should be lower
           </button>

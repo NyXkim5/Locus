@@ -135,6 +135,37 @@ function parseAIResponse(rawText) {
   }
 }
 
+function extractPartialAnalysis(partialJson) {
+  const marker = '"analysis"'
+  const idx = partialJson.indexOf(marker)
+  if (idx === -1) return null
+  const colonIdx = partialJson.indexOf(':', idx + marker.length)
+  if (colonIdx === -1) return null
+  const quoteIdx = partialJson.indexOf('"', colonIdx + 1)
+  if (quoteIdx === -1) return null
+  let text = ''
+  let i = quoteIdx + 1
+  let escaped = false
+  while (i < partialJson.length) {
+    const ch = partialJson[i]
+    if (escaped) {
+      if (ch === 'n') text += '\n'
+      else if (ch === '"') text += '"'
+      else if (ch === '\\') text += '\\'
+      else text += ch
+      escaped = false
+    } else if (ch === '\\') {
+      escaped = true
+    } else if (ch === '"') {
+      break
+    } else {
+      text += ch
+    }
+    i++
+  }
+  return text || null
+}
+
 function enrichListings(listings, recommendations) {
   if (!recommendations?.length || !listings?.length) return []
 
@@ -199,6 +230,7 @@ export default function AIAdvisor({ currentNeighborhood, listings = [], onRespon
   const [response, setResponse] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [streamingText, setStreamingText] = useState('')
   const [filters, setFilters] = useState({ priceRange: '', minBeds: '', minSqft: '' })
   const inputRef = useRef(null)
   const refineRef = useRef(null)
@@ -211,14 +243,15 @@ export default function AIAdvisor({ currentNeighborhood, listings = [], onRespon
     setFilters((f) => ({ ...f, [key]: value }))
   }
 
-  const handleSubmit = async (promptOverride) => {
+  const handleSubmit = async (promptOverride, displayLabel) => {
     const text = promptOverride || input
     if (!text.trim()) return
 
-    if (promptOverride) setInput(promptOverride)
+    if (promptOverride) setInput(displayLabel || promptOverride)
     setLoading(true)
     setError(null)
     setResponse(null)
+    setStreamingText('')
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY
     if (!apiKey) {
@@ -278,7 +311,7 @@ Guidelines:
     try {
       const fetchWithRetry = async (retries = 2) => {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -305,15 +338,41 @@ Guidelines:
 
       const res = await fetchWithRetry()
 
-      const json = await res.json()
-      const aiText = json.candidates?.[0]?.content?.parts?.[0]?.text
-      if (!aiText) throw new Error('No response received')
+      // Stream response and extract analysis progressively
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let sseBuffer = ''
+      let fullText = ''
 
-      const parsed = parseAIResponse(aiText)
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        sseBuffer += decoder.decode(value, { stream: true })
+        const lines = sseBuffer.split('\n')
+        sseBuffer = lines.pop()
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const payload = line.slice(6).trim()
+          if (!payload || payload === '[DONE]') continue
+          try {
+            const event = JSON.parse(payload)
+            const chunk = event.candidates?.[0]?.content?.parts?.[0]?.text
+            if (chunk) {
+              fullText += chunk
+              const partial = extractPartialAnalysis(fullText)
+              if (partial) setStreamingText(partial)
+            }
+          } catch {}
+        }
+      }
+
+      if (!fullText) throw new Error('No response received')
+      setStreamingText('')
+      const parsed = parseAIResponse(fullText)
       const enriched = enrichListings(listings, parsed.recommendations)
 
       // Only store messages in history after successful response
-      addChatMessage('user', text)
+      addChatMessage('user', displayLabel || text)
       addChatMessage('model', parsed.analysis)
 
       setResponse({ analysis: parsed.analysis, recommendations: parsed.recommendations })
@@ -323,6 +382,7 @@ Guidelines:
       setError(err.message)
     } finally {
       setLoading(false)
+      setStreamingText('')
     }
   }
 
@@ -405,7 +465,7 @@ Guidelines:
           {SUGGESTED_PROMPTS.map((s) => (
             <button
               key={s.label}
-              onClick={() => handleSubmit(s.prompt)}
+              onClick={() => handleSubmit(s.prompt, s.label)}
               disabled={loading}
               className="px-4 py-2.5 rounded-[8px] text-[14px] font-medium bg-[var(--accent-muted)] text-[var(--accent)] hover:bg-[var(--accent)]/15 transition-colors disabled:opacity-40"
             >
@@ -445,16 +505,27 @@ Guidelines:
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mt-5 flex items-center gap-3"
+              className="mt-5"
             >
-              <div className="flex gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0ms]" />
-                <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:150ms]" />
-                <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:300ms]" />
-              </div>
-              <span className="text-[15px] text-[var(--text-muted)]">
-                Analyzing neighborhoods...
-              </span>
+              {streamingText ? (
+                <div className="px-5 py-4 rounded-[10px] bg-[var(--bg-base)] border border-[var(--border)] shadow-sm">
+                  <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
+                    {streamingText}
+                    <span className="inline-block w-[2px] h-[16px] bg-[var(--accent)] ml-0.5 align-middle animate-pulse" />
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0ms]" />
+                    <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:150ms]" />
+                    <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:300ms]" />
+                  </div>
+                  <span className="text-[15px] text-[var(--text-muted)]">
+                    Analyzing neighborhoods...
+                  </span>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -498,7 +569,7 @@ Guidelines:
                         {msg.role !== 'user' && (
                           <span className="text-[10px] font-medium text-[var(--text-muted)] block mb-1">LOCUS AI</span>
                         )}
-                        <p className="line-clamp-3">{msg.text}</p>
+                        <p className="line-clamp-2">{msg.role === 'user' && msg.text.length > 120 ? msg.text.slice(0, 120) + '...' : msg.text}</p>
                       </div>
                     </div>
                   ))}
@@ -510,8 +581,8 @@ Guidelines:
 
               <div className="mt-5 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-5">
                 {/* Left: Analysis */}
-                <div className="px-5 py-4 rounded-[10px] bg-[var(--bg-base)] border border-[var(--border)] max-h-[500px] overflow-y-auto shadow-sm">
-                  <p className="text-[16px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
+                <div className="px-5 py-4 rounded-[10px] bg-[var(--bg-base)] border border-[var(--border)] shadow-sm">
+                  <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
                     {response.analysis}
                   </p>
                 </div>

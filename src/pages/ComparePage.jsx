@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import useStore from '../store/useStore'
-import { getNeighborhoodById, neighborhoods } from '../data/neighborhoods'
+import { getNeighborhoodById, getAllNeighborhoods } from '../data/neighborhoods'
 import TopBar from '../components/shared/TopBar'
 import FramingToggle from '../components/framing/FramingToggle'
 import ScoreCircle from '../components/shared/ScoreCircle'
 import ScoreBar from '../components/shared/ScoreBar'
 import { getScoreColor } from '../utils/scoreColor'
+import RadarChart from '../components/scores/RadarChart'
 import { useState } from 'react'
 
 function ComparisonColumn({ neighborhood }) {
@@ -30,12 +31,12 @@ function ComparisonColumn({ neighborhood }) {
       <div className="space-y-3">
         {neighborhood.categories.map((cat) => (
           <div key={cat.label} className={`bg-[var(--bg-surface)] rounded-[10px] border px-4 py-3 ${
-            cat.label === 'Sustainability' ? 'border-[#22C55E]/30' : 'border-[var(--border)]'
+            cat.label === 'Sustainability' ? 'border-[var(--color-sustainability-border)]' : 'border-[var(--border)]'
           }`}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[13px] text-[var(--text-secondary)] flex items-center gap-1.5">
                 {cat.label === 'Sustainability' && (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ stroke: 'var(--color-sustainability)' }}>
                     <path d="M12 22c5.523 0 7-6.477 7-12 0 0-3.5.5-7 3s-4.5 5-4.5 5" />
                     <path d="M5 14c2.5-2.5 5-3.5 7-3.5" />
                     <path d="M12 22V10" />
@@ -103,7 +104,7 @@ export default function ComparePage() {
     .map(getNeighborhoodById)
     .filter(Boolean)
 
-  const availableToAdd = neighborhoods.filter(
+  const availableToAdd = getAllNeighborhoods().filter(
     (n) => !comparisonIds.includes(n.id)
   )
 
@@ -207,6 +208,28 @@ export default function ComparePage() {
           </motion.div>
         )}
 
+        {/* Sustainability radar chart */}
+        {comparedNeighborhoods.length === 2 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.47 }}
+            className="mt-6 p-5 bg-[var(--bg-surface)] border border-[var(--color-sustainability-border)] rounded-[10px]"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth="2" aria-hidden="true" style={{ stroke: 'var(--color-sustainability)' }}>
+                <path d="M12 22c5.523 0 7-6.477 7-12 0 0-3.5.5-7 3s-4.5 5-4.5 5" />
+                <path d="M5 14c2.5-2.5 5-3.5 7-3.5" />
+                <path d="M12 22V10" />
+              </svg>
+              <h4 className="text-[13px] font-semibold" style={{ color: 'var(--color-sustainability)' }}>
+                Sustainability Comparison
+              </h4>
+            </div>
+            <RadarChart neighborhoods={comparedNeighborhoods} />
+          </motion.div>
+        )}
+
         {/* Carbon savings insight */}
         {comparedNeighborhoods.length === 2 && (() => {
           const a = comparedNeighborhoods[0]
@@ -236,18 +259,18 @@ export default function ComparePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55 }}
               className="mt-4 p-4 rounded-[10px] border"
-              style={{ borderColor: 'rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)' }}
+              style={{ borderColor: 'var(--color-sustainability-border)', background: 'var(--color-sustainability-muted)' }}
             >
               <div className="flex items-start gap-3">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" className="flex-shrink-0 mt-0.5" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" className="flex-shrink-0 mt-0.5" aria-hidden="true" style={{ stroke: 'var(--color-sustainability)' }}>
                   <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75" />
                 </svg>
                 <div>
-                  <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] mb-1.5" style={{ color: '#16A34A' }}>
+                  <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] mb-1.5" style={{ color: 'var(--score-high)' }}>
                     Carbon Savings Insight
                   </h4>
                   <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                    Choosing <strong>{greener.name}</strong> over {greener === a ? b.name : a.name} could save an estimated <strong style={{ color: '#16A34A' }}>{co2Saved} tons of CO₂ per year</strong> based on differences in carbon footprint ({carbonA} vs {carbonB}), green transit ({transitA} vs {transitB}), and bike infrastructure ({bikeA} vs {bikeB}) scores.
+                    Choosing <strong>{greener.name}</strong> over {greener === a ? b.name : a.name} could save an estimated <strong style={{ color: 'var(--score-high)' }}>{co2Saved} tons of CO₂ per year</strong> based on differences in carbon footprint ({carbonA} vs {carbonB}), green transit ({transitA} vs {transitB}), and bike infrastructure ({bikeA} vs {bikeB}) scores.
                   </p>
                   <p className="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">
                     Estimate based on EPA household emissions data — each sustainability score point corresponds to approximately 0.08 metric tons CO₂/year, derived from the national average household footprint of 8.1 metric tons mapped across a 0–100 sustainability scale.

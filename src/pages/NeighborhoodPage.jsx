@@ -17,7 +17,7 @@ function SustainabilityBadge({ categories }) {
 
   const score = susCat.score
   const level = score >= 80 ? 'Excellent' : score >= 70 ? 'Good' : score >= 55 ? 'Moderate' : 'Needs Work'
-  const color = score >= 80 ? 'var(--score-high)' : score >= 70 ? '#22C55E' : score >= 55 ? 'var(--score-mid)' : 'var(--score-low)'
+  const color = score >= 80 ? 'var(--score-high)' : score >= 70 ? 'var(--color-sustainability)' : score >= 55 ? 'var(--score-mid)' : 'var(--score-low)'
 
   return (
     <div
@@ -80,18 +80,18 @@ function SustainabilityHighlights({ neighborhood }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5, duration: 0.4 }}
-      className="mt-8 p-5 bg-[var(--bg-surface)] border border-[#22C55E]/20 rounded-[10px]"
+      className="mt-8 p-5 bg-[var(--bg-surface)] border border-[var(--color-sustainability-border)] rounded-[10px]"
     >
       <div className="flex items-center gap-2 mb-5">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ stroke: 'var(--color-sustainability)' }}>
           <path d="M12 22c5.523 0 7-6.477 7-12 0 0-3.5.5-7 3s-4.5 5-4.5 5" />
           <path d="M5 14c2.5-2.5 5-3.5 7-3.5" />
           <path d="M12 22V10" />
         </svg>
-        <h3 className="text-[14px] font-semibold" style={{ color: '#22C55E' }}>
+        <h3 className="text-[14px] font-semibold" style={{ color: 'var(--color-sustainability)' }}>
           Sustainability Profile
         </h3>
-        <span className="ml-auto text-[12px] font-medium" style={{ color: '#22C55E' }}>
+        <span className="ml-auto text-[12px] font-medium" style={{ color: 'var(--color-sustainability)' }}>
           {susCat.score}/100
         </span>
       </div>
@@ -99,7 +99,7 @@ function SustainabilityHighlights({ neighborhood }) {
       {/* Visual factor bars */}
       <div className="space-y-3 mb-5">
         {factors.map((f) => {
-          const barColor = f.score >= 70 ? '#22C55E' : f.score >= 50 ? 'var(--score-mid)' : 'var(--score-low)'
+          const barColor = f.score >= 70 ? 'var(--color-sustainability)' : f.score >= 50 ? 'var(--score-mid)' : 'var(--score-low)'
           return (
             <div key={f.name}>
               <div className="flex items-center justify-between mb-1">
@@ -128,7 +128,7 @@ function SustainabilityHighlights({ neighborhood }) {
         <ul className="space-y-1.5">
           {tipFactors.map(f => (
             <li key={f.name} className="text-[12px] text-[var(--text-secondary)] leading-relaxed flex gap-2">
-              <span className="text-[#22C55E] flex-shrink-0">→</span>
+              <span className="text-[var(--color-sustainability)] flex-shrink-0">→</span>
               <span><strong className="text-[var(--text-primary)]">{f.name}:</strong> {getFactorTip(f.name, f.score)}</span>
             </li>
           ))}
@@ -145,6 +145,36 @@ function SustainabilityHighlights({ neighborhood }) {
         </p>
       </div>
     </motion.div>
+  )
+}
+
+function ListingSkeleton() {
+  return (
+    <div className="mt-4 space-y-3">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-ping" />
+        <span className="text-[12px] text-[var(--text-muted)]">Finding listings...</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="rounded-[10px] border border-[var(--border)] bg-[var(--bg-surface)] overflow-hidden animate-pulse"
+          >
+            <div className="h-28 bg-[var(--bg-elevated)]" />
+            <div className="p-3 space-y-2">
+              <div className="h-3.5 w-3/4 bg-[var(--bg-elevated)] rounded" />
+              <div className="h-3 w-1/2 bg-[var(--bg-elevated)] rounded" />
+              <div className="flex gap-2 mt-1">
+                <div className="h-2.5 w-10 bg-[var(--bg-elevated)] rounded" />
+                <div className="h-2.5 w-10 bg-[var(--bg-elevated)] rounded" />
+                <div className="h-2.5 w-14 bg-[var(--bg-elevated)] rounded" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -225,6 +255,23 @@ export default function NeighborhoodPage() {
       <TopBar title={neighborhood.name} showBack />
 
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-32">
+        {/* AI-Generated badge */}
+        {neighborhood.isGenerated && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 flex justify-center"
+          >
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] text-[12px] font-medium">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+              AI-Generated Analysis
+            </span>
+          </motion.div>
+        )}
         {/* Framing toggle */}
         <div className="flex justify-end mb-6">
           <FramingToggle />
@@ -243,14 +290,10 @@ export default function NeighborhoodPage() {
               overallScore={neighborhood.overallScore}
               listings={listings}
             />
-            {listingsLoading && (
-              <div className="flex items-center gap-2 mt-2 px-1">
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0ms]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:150ms]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:300ms]" />
-                </div>
-                <span className="text-[12px] text-[var(--text-muted)]">Loading listings...</span>
+            {listingsLoading && <ListingSkeleton />}
+            {listingsError && !listingsLoading && (
+              <div className="mt-3 px-3 py-2.5 rounded-[8px] border border-[var(--score-low)]/20 bg-[var(--score-low)]/5">
+                <p className="text-[12px] text-[var(--score-low)]">{listingsError}</p>
               </div>
             )}
           </motion.div>

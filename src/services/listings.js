@@ -55,8 +55,21 @@ export async function fetchListings(neighborhoodId) {
   const cached = getCached(neighborhoodId)
   if (cached) return cached
 
-  const location = LOCATION_MAP[neighborhoodId]
-  if (!location) throw new Error('Unknown neighborhood')
+  let location = LOCATION_MAP[neighborhoodId]
+  if (!location) {
+    // Check generated neighborhoods for dynamic city names
+    try {
+      const raw = localStorage.getItem('locus_generated_neighborhoods')
+      const generated = raw ? JSON.parse(raw) : {}
+      if (generated[neighborhoodId]) {
+        location = `city:${generated[neighborhoodId].name}`
+      } else {
+        return []
+      }
+    } catch {
+      return []
+    }
+  }
 
   const result = pending.then(() => _fetch(neighborhoodId, location, apiKey))
   pending = result.catch(() => {})
@@ -106,7 +119,9 @@ async function _fetch(neighborhoodId, location, apiKey, retries = 2) {
       sqft: typeof p.description?.sqft === 'number' ? p.description.sqft : null,
       type: formatType(p.description?.type),
       imgSrc: p.primary_photo?.href
-        ? p.primary_photo.href.replace(/\/(s|e|t)\.jpg/, '/od.jpg')
+        ? p.primary_photo.href
+            .replace(/-w\d+_h\d+/, '-w1080_h810')
+            .replace(/\/[a-z]\.jpg/i, '/od.jpg')
         : null,
       detailUrl: p.href || null,
       isNew: Boolean(p.flags?.is_new_construction),

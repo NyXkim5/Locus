@@ -1429,6 +1429,20 @@ export const neighborhoods = [
 ];
 
 export function getNeighborhoodById(id) {
-  return neighborhoods.find((n) => n.id === id);
+  return neighborhoods.find((n) => n.id === id)
+    || _getGenerated()[id] || null
+}
+
+export function getAllNeighborhoods() {
+  return [...neighborhoods, ...Object.values(_getGenerated())]
+}
+
+// Inline accessor — avoids top-level import of useStore to keep this file dependency-free.
+// useStore is guaranteed loaded before any call to these functions (React has already mounted).
+function _getGenerated() {
+  try {
+    const raw = localStorage.getItem('locus_generated_neighborhoods')
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
 }
 
