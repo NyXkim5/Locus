@@ -1,4 +1,6 @@
 export function recalculateFactor(factor, challengeDirection) {
+  if (!factor.sources || factor.sources.length === 0) return factor;
+
   const delta = challengeDirection === 'higher' ? 8 : -8;
 
   const adjusted = factor.sources.map(source => {
@@ -17,6 +19,8 @@ export function recalculateFactor(factor, challengeDirection) {
   });
 
   const totalWeight = adjusted.reduce((sum, s) => sum + s.weight, 0);
+  if (totalWeight === 0) return factor;
+
   const normalized = adjusted.map(s => ({
     ...s,
     weight: s.weight / totalWeight,

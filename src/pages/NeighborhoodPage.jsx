@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { getNeighborhoodById } from '../data/neighborhoods'
 import useStore from '../store/useStore'
@@ -15,6 +16,11 @@ export default function NeighborhoodPage() {
   const openChallenge = useStore((s) => s.openChallenge)
   const addToComparison = useStore((s) => s.addToComparison)
   const comparisonIds = useStore((s) => s.comparisonIds)
+  const collapseAll = useStore((s) => s.collapseAll)
+
+  useEffect(() => {
+    collapseAll()
+  }, [id, collapseAll])
 
   if (!neighborhood) {
     return (
@@ -28,8 +34,12 @@ export default function NeighborhoodPage() {
     openChallenge(id, categoryIndex, factorIndex)
   }
 
+  const alreadyInComparison = comparisonIds.includes(id)
+
   const handleCompare = () => {
-    addToComparison(id)
+    if (!alreadyInComparison) {
+      addToComparison(id)
+    }
     navigate('/compare')
   }
 
@@ -101,7 +111,7 @@ export default function NeighborhoodPage() {
               disabled={comparisonIds.length >= 2 && !comparisonIds.includes(id)}
               className="w-full mt-4 py-3 border border-dashed border-[#2A2A2E] rounded-[10px] text-[13px] text-[#71717A] hover:border-[#6366F1] hover:text-[#6366F1] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              + Compare with another neighborhood
+              {alreadyInComparison ? 'View comparison' : '+ Compare with another neighborhood'}
             </motion.button>
           </div>
         </div>

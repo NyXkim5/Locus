@@ -1108,7 +1108,3 @@ export function getNeighborhoodById(id) {
   return neighborhoods.find((n) => n.id === id);
 }
 
-export function searchNeighborhoods(query) {
-  const lower = query.toLowerCase();
-  return neighborhoods.filter((n) => n.name.toLowerCase().includes(lower));
-}

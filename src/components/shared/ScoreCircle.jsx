@@ -1,11 +1,6 @@
 import { animate } from 'framer-motion'
 import { useEffect, useState } from 'react'
-
-function getScoreColor(score) {
-  if (score >= 70) return '#34D399'
-  if (score >= 40) return '#FBBF24'
-  return '#F87171'
-}
+import { getScoreColor } from '../../utils/scoreColor'
 
 export default function ScoreCircle({ score, size = 'lg' }) {
   const [displayScore, setDisplayScore] = useState(0)
@@ -28,6 +23,7 @@ export default function ScoreCircle({ score, size = 'lg' }) {
     <div
       className={`${sizeClasses} rounded-full flex items-center justify-center font-bold border-2`}
       style={{ borderColor: color, color }}
+      aria-label={`Score: ${score} out of 100`}
     >
       {displayScore}
     </div>

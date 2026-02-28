@@ -1,14 +1,9 @@
 import { motion } from 'framer-motion'
-
-function getScoreColor(score) {
-  if (score >= 70) return '#34D399'
-  if (score >= 40) return '#FBBF24'
-  return '#F87171'
-}
+import { getScoreColor } from '../../utils/scoreColor'
 
 export default function ScoreBar({ score, delay = 0 }) {
   return (
-    <div className="h-1.5 w-full rounded-full bg-[#2A2A2E] overflow-hidden">
+    <div className="h-1.5 w-full rounded-full bg-[#2A2A2E] overflow-hidden" role="progressbar" aria-valuenow={score} aria-valuemin={0} aria-valuemax={100}>
       <motion.div
         className="h-full rounded-full"
         style={{ backgroundColor: getScoreColor(score) }}

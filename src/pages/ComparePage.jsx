@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import useStore from '../store/useStore'
 import { getNeighborhoodById, neighborhoods } from '../data/neighborhoods'
@@ -6,13 +5,8 @@ import TopBar from '../components/shared/TopBar'
 import FramingToggle from '../components/framing/FramingToggle'
 import ScoreCircle from '../components/shared/ScoreCircle'
 import ScoreBar from '../components/shared/ScoreBar'
+import { getScoreColor } from '../utils/scoreColor'
 import { useState } from 'react'
-
-function getScoreColor(score) {
-  if (score >= 70) return '#34D399'
-  if (score >= 40) return '#FBBF24'
-  return '#F87171'
-}
 
 function ComparisonColumn({ neighborhood }) {
   const framingMode = useStore((s) => s.framingMode)
@@ -34,7 +28,7 @@ function ComparisonColumn({ neighborhood }) {
 
       {/* Categories */}
       <div className="space-y-3">
-        {neighborhood.categories.map((cat, i) => (
+        {neighborhood.categories.map((cat) => (
           <div key={cat.label} className="bg-[#161618] rounded-[10px] border border-[#2A2A2E] px-4 py-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[13px] text-[#A1A1AA]">{cat.label}</span>
@@ -74,14 +68,24 @@ function generateInsight(a, b) {
   }))
 
   const biggest = diffs.reduce((max, d) => Math.abs(d.diff) > Math.abs(max.diff) ? d : max)
+
+  if (biggest.diff === 0) {
+    return `${a.name} and ${b.name} score identically across all categories. Both are strong options — your decision may come down to personal preference, commute, or lifestyle fit.`
+  }
+
   const winner = biggest.diff > 0 ? b.name : a.name
 
-  return `${winner} scores significantly higher on ${biggest.label} (${Math.max(biggest.aScore, biggest.bScore)} vs ${Math.min(biggest.aScore, biggest.bScore)}). Overall, ${a.overallScore > b.overallScore ? a.name : b.name} has a higher composite score, but individual category differences may matter more for your priorities.`
+  const overallClause = a.overallScore === b.overallScore
+    ? `Both share the same composite score of ${a.overallScore}`
+    : `Overall, ${a.overallScore > b.overallScore ? a.name : b.name} has a higher composite score`
+
+  return `${winner} scores significantly higher on ${biggest.label} (${Math.max(biggest.aScore, biggest.bScore)} vs ${Math.min(biggest.aScore, biggest.bScore)}). ${overallClause}, but individual category differences may matter more for your priorities.`
 }
 
 export default function ComparePage() {
-  const navigate = useNavigate()
-  const { comparisonIds, addToComparison, removeFromComparison } = useStore()
+  const comparisonIds = useStore((s) => s.comparisonIds)
+  const addToComparison = useStore((s) => s.addToComparison)
+  const removeFromComparison = useStore((s) => s.removeFromComparison)
   const [showPicker, setShowPicker] = useState(false)
 
   const comparedNeighborhoods = comparisonIds
@@ -118,7 +122,7 @@ export default function ComparePage() {
           </div>
         )}
 
-        <div className="flex gap-6">
+        <div className="flex flex-col md:flex-row gap-6">
           {/* Compared neighborhoods */}
           {comparedNeighborhoods.map((n) => (
             <div key={n.id} className="flex-1 relative">

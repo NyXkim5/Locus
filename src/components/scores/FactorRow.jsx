@@ -2,12 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ScoreBar from '../shared/ScoreBar'
 import ConfidenceShield from '../shared/ConfidenceShield'
 import useStore from '../../store/useStore'
-
-function getScoreColor(score) {
-  if (score >= 70) return '#34D399'
-  if (score >= 40) return '#FBBF24'
-  return '#F87171'
-}
+import { getScoreColor } from '../../utils/scoreColor'
 
 export default function FactorRow({ factor, index, onChallenge }) {
   const framingMode = useStore((s) => s.framingMode)
@@ -20,6 +15,10 @@ export default function FactorRow({ factor, index, onChallenge }) {
       transition={{ delay: index * 0.05, duration: 0.3 }}
       className="group py-3 px-3 rounded-[6px] hover:bg-[#1C1C1F] transition-colors cursor-pointer"
       onClick={() => onChallenge?.()}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChallenge?.() } }}
+      aria-label={`${factor.name}: score ${factor.score}, confidence ${factor.confidence}%. Click to challenge.`}
     >
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-[14px] text-[#F4F4F5]">{factor.name}</span>

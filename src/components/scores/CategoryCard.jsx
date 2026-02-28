@@ -1,26 +1,30 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import useStore from '../../store/useStore'
 import FactorRow from './FactorRow'
-
-function getScoreColor(score) {
-  if (score >= 70) return '#34D399'
-  if (score >= 40) return '#FBBF24'
-  return '#F87171'
-}
+import { getScoreColor } from '../../utils/scoreColor'
 
 export default function CategoryCard({ categoryKey, category, neighborhoodId, onChallengeFactor }) {
-  const { expandedCategory, toggleCategory } = useStore()
+  const expandedCategory = useStore((s) => s.expandedCategory)
+  const toggleCategory = useStore((s) => s.toggleCategory)
+  const challengedFactors = useStore((s) => s.challengedFactors)
   const isExpanded = expandedCategory === categoryKey
 
+  // Resolve challenged factors — fall back to static data
+  const resolvedFactors = category.factors.map((factor, i) => {
+    const key = `${neighborhoodId}.${categoryKey}.${i}`
+    return challengedFactors[key] || factor
+  })
+
   return (
-    <motion.div
-      layout
-      className="bg-[#161618] border border-[#2A2A2E] rounded-[10px] overflow-hidden hover:border-[#3A3A40] transition-colors cursor-pointer"
+    <div
+      className="bg-[#161618] border border-[#2A2A2E] rounded-[10px] overflow-hidden hover:border-[#3A3A40] transition-colors"
     >
       {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 py-3"
+      <button
+        className="flex items-center justify-between px-4 py-3 w-full text-left cursor-pointer"
         onClick={() => toggleCategory(categoryKey)}
+        aria-expanded={isExpanded}
+        aria-label={`${category.label} category, score ${category.score}`}
       >
         <span className="text-[14px] font-medium">{category.label}</span>
         <div className="flex items-center gap-2">
@@ -39,11 +43,12 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
             strokeWidth="2"
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
+            aria-hidden="true"
           >
             <path d="M6 9l6 6 6-6" />
           </motion.svg>
         </div>
-      </div>
+      </button>
 
       {/* Expanded factors */}
       <AnimatePresence>
@@ -55,7 +60,7 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="px-3 pb-3 border-t border-[#2A2A2E]">
-              {category.factors.map((factor, i) => (
+              {resolvedFactors.map((factor, i) => (
                 <FactorRow
                   key={factor.name}
                   factor={factor}
@@ -67,6 +72,6 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   )
 }

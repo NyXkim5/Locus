@@ -8,10 +8,11 @@ const modes = [
 ]
 
 export default function FramingToggle() {
-  const { framingMode, setFramingMode } = useStore()
+  const framingMode = useStore((s) => s.framingMode)
+  const setFramingMode = useStore((s) => s.setFramingMode)
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" role="radiogroup" aria-label="Data framing mode">
       <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-[#71717A]">
         Framing
       </span>
@@ -24,6 +25,9 @@ export default function FramingToggle() {
             style={{
               color: framingMode === mode.key ? '#F4F4F5' : '#71717A',
             }}
+            role="radio"
+            aria-checked={framingMode === mode.key}
+            aria-label={`${mode.label} framing`}
           >
             {framingMode === mode.key && (
               <motion.div
