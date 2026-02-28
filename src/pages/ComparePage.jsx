@@ -29,9 +29,9 @@ function ComparisonColumn({ neighborhood }) {
       {/* Categories */}
       <div className="space-y-3">
         {neighborhood.categories.map((cat) => (
-          <div key={cat.label} className="bg-[#161618] rounded-[10px] border border-[#2A2A2E] px-4 py-3">
+          <div key={cat.label} className="bg-[var(--bg-surface)] rounded-[10px] border border-[var(--border)] px-4 py-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[13px] text-[#A1A1AA]">{cat.label}</span>
+              <span className="text-[13px] text-[var(--text-secondary)]">{cat.label}</span>
               <span
                 className="text-[14px] font-semibold"
                 style={{ color: getScoreColor(cat.score) }}
@@ -47,7 +47,7 @@ function ComparisonColumn({ neighborhood }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="text-[11px] text-[#71717A] mt-2"
+                className="text-[11px] text-[var(--text-muted)] mt-2"
               >
                 {cat.factors[0]?.frames[framingMode]}
               </motion.p>
@@ -103,7 +103,7 @@ export default function ComparePage() {
       <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Framing toggle */}
         <div className="flex justify-between items-center mb-8">
-          <p className="text-[12px] text-[#71717A]">
+          <p className="text-[12px] text-[var(--text-muted)]">
             Framing affects all descriptions simultaneously
           </p>
           <FramingToggle />
@@ -112,10 +112,10 @@ export default function ComparePage() {
         {/* Empty state */}
         {comparedNeighborhoods.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-[#71717A] text-[14px] mb-4">No neighborhoods selected for comparison.</p>
+            <p className="text-[var(--text-muted)] text-[14px] mb-4">No neighborhoods selected for comparison.</p>
             <button
               onClick={() => setShowPicker(true)}
-              className="px-4 py-2 bg-[#6366F1] text-white text-[13px] font-medium rounded-[6px] hover:bg-[#818CF8] transition-colors"
+              className="px-4 py-2 bg-[var(--accent)] text-white text-[13px] font-medium rounded-[6px] hover:bg-[var(--accent-hover)] transition-colors"
             >
               Add a neighborhood
             </button>
@@ -128,7 +128,8 @@ export default function ComparePage() {
             <div key={n.id} className="flex-1 relative">
               <button
                 onClick={() => removeFromComparison(n.id)}
-                className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-full bg-[#1C1C1F] border border-[#2A2A2E] flex items-center justify-center text-[#71717A] hover:text-[#F87171] hover:border-[#F87171] transition-colors text-[12px]"
+                aria-label={`Remove ${n.name} from comparison`}
+                className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--score-low)] hover:border-[var(--score-low)] transition-colors text-[12px]"
               >
                 ×
               </button>
@@ -143,7 +144,7 @@ export default function ComparePage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#161618] border border-[#2A2A2E] rounded-[10px] p-4"
+                  className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] p-4"
                 >
                   <h3 className="text-[13px] font-medium mb-3">Add neighborhood</h3>
                   <div className="space-y-1">
@@ -154,10 +155,10 @@ export default function ComparePage() {
                           addToComparison(n.id)
                           setShowPicker(false)
                         }}
-                        className="w-full text-left px-3 py-2.5 rounded-[6px] text-[13px] hover:bg-[#1C1C1F] transition-colors flex items-center justify-between"
+                        className="w-full text-left px-3 py-2.5 rounded-[6px] text-[13px] hover:bg-[var(--bg-elevated)] transition-colors flex items-center justify-between"
                       >
                         <span>{n.name}</span>
-                        <span className="text-[12px] text-[#71717A]">{n.overallScore}</span>
+                        <span className="text-[12px] text-[var(--text-muted)]">{n.overallScore}</span>
                       </button>
                     ))}
                   </div>
@@ -165,7 +166,8 @@ export default function ComparePage() {
               ) : (
                 <button
                   onClick={() => setShowPicker(true)}
-                  className="w-full h-full min-h-[400px] border-2 border-dashed border-[#2A2A2E] rounded-[10px] flex flex-col items-center justify-center gap-2 text-[#71717A] hover:border-[#6366F1] hover:text-[#6366F1] transition-all"
+                  aria-label="Add a neighborhood to compare"
+                  className="w-full h-full min-h-[400px] border-2 border-dashed border-[var(--border)] rounded-[10px] flex flex-col items-center justify-center gap-2 text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 5v14M5 12h14" />
@@ -183,12 +185,12 @@ export default function ComparePage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mt-8 p-4 bg-[#161618] border border-[#2A2A2E] rounded-[10px]"
+            className="mt-8 p-4 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px]"
           >
-            <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] text-[#71717A] mb-2">
+            <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2">
               Key Differences
             </h4>
-            <p className="text-[13px] text-[#A1A1AA] leading-relaxed">
+            <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
               {generateInsight(comparedNeighborhoods[0], comparedNeighborhoods[1])}
             </p>
           </motion.div>

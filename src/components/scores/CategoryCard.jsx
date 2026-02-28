@@ -17,7 +17,7 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
 
   return (
     <div
-      className="bg-[#161618] border border-[#2A2A2E] rounded-[10px] overflow-hidden hover:border-[#3A3A40] transition-colors"
+      className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] overflow-hidden hover:border-[var(--border-active)] transition-colors"
     >
       {/* Header */}
       <button
@@ -39,7 +39,7 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
             height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#71717A"
+            stroke="currentColor"
             strokeWidth="2"
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
@@ -59,7 +59,7 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="px-3 pb-3 border-t border-[#2A2A2E]">
+            <div className="px-3 pb-3 border-t border-[var(--border)]">
               {resolvedFactors.map((factor, i) => (
                 <FactorRow
                   key={factor.name}

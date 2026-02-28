@@ -1,7 +1,7 @@
 export default function ConfidenceShield({ confidence }) {
   return (
     <div
-      className="flex items-center gap-1 text-[11px] text-[#71717A]"
+      className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]"
       aria-label={`AI confidence: ${confidence}%`}
     >
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

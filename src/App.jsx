@@ -7,11 +7,11 @@ import ChallengePanel from './components/challenge/ChallengePanel'
 function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-[20px] font-semibold text-[#F4F4F5]">Page not found</h1>
-      <p className="text-[14px] text-[#71717A]">The page you're looking for doesn't exist.</p>
+      <h1 className="text-[20px] font-semibold text-[var(--text-primary)]">Page not found</h1>
+      <p className="text-[14px] text-[var(--text-muted)]">The page you're looking for doesn't exist.</p>
       <Link
         to="/"
-        className="px-4 py-2 bg-[#6366F1] text-white text-[13px] font-medium rounded-[6px] hover:bg-[#818CF8] transition-colors"
+        className="px-4 py-2 bg-[var(--accent)] text-white text-[13px] font-medium rounded-[6px] hover:bg-[var(--accent-hover)] transition-colors"
       >
         Back to home
       </Link>
@@ -22,7 +22,7 @@ function NotFound() {
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#0C0C0E] text-[#F4F4F5]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+      <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
         <Routes>
           <Route path="/" element={<InputPage />} />
           <Route path="/neighborhood/:id" element={<NeighborhoodPage />} />

@@ -64,9 +64,9 @@ export default function InputPage() {
       >
         {/* Logo */}
         <h1 className="text-[20px] font-semibold tracking-[-0.02em] mb-1">
-          <span className="text-[#6366F1]">LOCUS</span>
+          <span className="text-[var(--accent)]">LOCUS</span>
         </h1>
-        <p className="text-[#71717A] text-[12px] uppercase tracking-[0.08em] mb-10">
+        <p className="text-[var(--text-muted)] text-[12px] uppercase tracking-[0.08em] mb-10">
           Neighborhood Intelligence, Debiased
         </p>
 
@@ -77,7 +77,7 @@ export default function InputPage() {
 
         {/* Search Input */}
         <div className="relative">
-          <div className="flex items-center bg-[#161618] border border-[#2A2A2E] rounded-[10px] px-4 py-3 focus-within:border-[#6366F1] transition-colors">
+          <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] px-4 py-3 focus-within:border-[var(--accent)] transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2" className="mr-3 flex-shrink-0" aria-hidden="true">
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.35-4.35" />
@@ -89,7 +89,7 @@ export default function InputPage() {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Search address or neighborhood"
-              className="bg-transparent w-full text-[14px] text-[#F4F4F5] placeholder-[#71717A] outline-none"
+              className="bg-transparent w-full text-[14px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
               autoFocus
               role="combobox"
               aria-expanded={isOpen}
@@ -113,7 +113,7 @@ export default function InputPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15 }}
-                className="absolute top-full left-0 right-0 mt-2 bg-[#161618] border border-[#2A2A2E] rounded-[10px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.5)] z-10"
+                className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.1)] z-10"
               >
                 {results.map((n, i) => (
                   <button
@@ -124,11 +124,11 @@ export default function InputPage() {
                     onClick={() => handleSelect(n.id)}
                     onMouseEnter={() => setActiveIndex(i)}
                     className={`w-full text-left px-4 py-3 text-[14px] transition-colors flex items-center justify-between ${
-                      i === activeIndex ? 'bg-[#1C1C1F]' : 'hover:bg-[#1C1C1F]'
+                      i === activeIndex ? 'bg-[var(--bg-elevated)]' : 'hover:bg-[var(--bg-elevated)]'
                     }`}
                   >
                     <span>{n.name}</span>
-                    <span className="text-[12px] text-[#71717A]">Score: {n.overallScore}</span>
+                    <span className="text-[12px] text-[var(--text-muted)]">Score: {n.overallScore}</span>
                   </button>
                 ))}
               </motion.div>
@@ -138,12 +138,12 @@ export default function InputPage() {
 
         {/* Suggestion Pills */}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <span className="text-[12px] text-[#71717A] mr-1 self-center">Try:</span>
+          <span className="text-[12px] text-[var(--text-muted)] mr-1 self-center">Try:</span>
           {neighborhoods.map((n) => (
             <button
               key={n.id}
               onClick={() => handleSelect(n.id)}
-              className="px-3 py-1.5 text-[12px] text-[#A1A1AA] bg-[#161618] border border-[#2A2A2E] rounded-[6px] hover:border-[#6366F1] hover:text-[#F4F4F5] transition-all"
+              className="px-3 py-1.5 text-[12px] text-[var(--text-secondary)] bg-[var(--bg-surface)] border border-[var(--border)] rounded-[6px] hover:border-[var(--accent)] hover:text-[var(--text-primary)] transition-all"
             >
               {n.name}
             </button>

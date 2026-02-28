@@ -13,7 +13,7 @@ export default function FactorRow({ factor, index, onChallenge }) {
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
-      className="group py-3 px-3 rounded-[6px] hover:bg-[#1C1C1F] transition-colors cursor-pointer"
+      className="group py-3 px-3 rounded-[6px] hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer"
       onClick={() => onChallenge?.()}
       role="button"
       tabIndex={0}
@@ -21,7 +21,7 @@ export default function FactorRow({ factor, index, onChallenge }) {
       aria-label={`${factor.name}: score ${factor.score}, confidence ${factor.confidence}%. Click to challenge.`}
     >
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[14px] text-[#F4F4F5]">{factor.name}</span>
+        <span className="text-[14px] text-[var(--text-primary)]">{factor.name}</span>
         <div className="flex items-center gap-3">
           <span
             className="text-[14px] font-semibold"
@@ -40,13 +40,13 @@ export default function FactorRow({ factor, index, onChallenge }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="text-[12px] text-[#71717A] mt-1.5"
+          className="text-[12px] text-[var(--text-muted)] mt-1.5"
         >
           {description}
         </motion.p>
       </AnimatePresence>
       {factor.userChallenged && (
-        <span className="text-[10px] text-[#6366F1] mt-1 inline-block">
+        <span className="text-[10px] text-[var(--accent)] mt-1 inline-block">
           Score adjusted by your input
         </span>
       )}

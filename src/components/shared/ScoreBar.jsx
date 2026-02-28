@@ -3,7 +3,7 @@ import { getScoreColor } from '../../utils/scoreColor'
 
 export default function ScoreBar({ score, delay = 0 }) {
   return (
-    <div className="h-1.5 w-full rounded-full bg-[#2A2A2E] overflow-hidden" role="progressbar" aria-valuenow={score} aria-valuemin={0} aria-valuemax={100}>
+    <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden" role="progressbar" aria-valuenow={score} aria-valuemin={0} aria-valuemax={100} aria-label={`Score: ${score} out of 100`}>
       <motion.div
         className="h-full rounded-full"
         style={{ backgroundColor: getScoreColor(score) }}
