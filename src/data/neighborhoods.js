@@ -1,0 +1,1114 @@
+export const neighborhoods = [
+  // ──────────────────────────────────────────────
+  // IRVINE — Family-oriented, safe, suburban
+  // ──────────────────────────────────────────────
+  {
+    id: "irvine",
+    name: "Irvine",
+    coordinates: { lat: 33.6846, lng: -117.8265 },
+    overallScore: 78,
+    categories: [
+      {
+        label: "Livability",
+        score: 81,
+        factors: [
+          {
+            name: "Walkability",
+            score: 54,
+            confidence: 82,
+            sources: [
+              { name: "Walk Score Index", weight: 0.45, value: 56, type: "measured" },
+              { name: "USDOT Pedestrian Infrastructure Survey", weight: 0.3, value: 58, type: "measured" },
+              { name: "AI Pedestrian Activity Model", weight: 0.25, value: 46, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Walkability: 54",
+              positive: "Better than 41% of Orange County suburbs for walkability",
+              negative: "Falls behind 59% of comparable neighborhoods in pedestrian accessibility",
+            },
+          },
+          {
+            name: "Transit Access",
+            score: 54,
+            confidence: 75,
+            sources: [
+              { name: "OCTA Ridership Data", weight: 0.4, value: 57, type: "measured" },
+              { name: "AllTransit Performance Score", weight: 0.35, value: 55, type: "measured" },
+              { name: "AI Transit Connectivity Estimate", weight: 0.25, value: 48, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Transit Access: 54",
+              positive: "Better than 48% of suburban communities for public transit options",
+              negative: "Falls behind 52% of comparable neighborhoods in transit connectivity",
+            },
+          },
+          {
+            name: "Parks & Recreation",
+            score: 91,
+            confidence: 90,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 93, type: "measured" },
+              { name: "City of Irvine Parks Inventory", weight: 0.35, value: 92, type: "measured" },
+              { name: "AI Green Space Coverage Model", weight: 0.25, value: 86, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Parks & Recreation: 91",
+              positive: "Better than 94% of Southern California neighborhoods for park access and quality",
+              negative: "Falls behind 6% of comparable neighborhoods in recreational amenities",
+            },
+          },
+          {
+            name: "Grocery & Essentials Access",
+            score: 83,
+            confidence: 88,
+            sources: [
+              { name: "USDA Food Access Research Atlas", weight: 0.4, value: 85, type: "measured" },
+              { name: "Yelp Business Density Index", weight: 0.35, value: 84, type: "measured" },
+              { name: "AI Essential Services Proximity Model", weight: 0.25, value: 78, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Grocery & Essentials Access: 83",
+              positive: "Better than 79% of suburban neighborhoods for everyday shopping convenience",
+              negative: "Falls behind 21% of comparable neighborhoods in essential services access",
+            },
+          },
+        ],
+      },
+      {
+        label: "Safety",
+        score: 88,
+        factors: [
+          {
+            name: "Violent Crime Rate",
+            score: 92,
+            confidence: 95,
+            sources: [
+              { name: "FBI UCR Crime Statistics", weight: 0.45, value: 94, type: "measured" },
+              { name: "Irvine PD Annual Crime Report", weight: 0.35, value: 93, type: "measured" },
+              { name: "AI Crime Trend Projection", weight: 0.2, value: 87, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Violent Crime Rate: 92",
+              positive: "Better than 95% of U.S. cities of similar size for violent crime safety",
+              negative: "Falls behind 5% of comparable neighborhoods in violent crime prevention",
+            },
+          },
+          {
+            name: "Property Crime Rate",
+            score: 84,
+            confidence: 93,
+            sources: [
+              { name: "FBI UCR Property Crime Data", weight: 0.4, value: 86, type: "measured" },
+              { name: "Irvine PD Property Crime Reports", weight: 0.35, value: 85, type: "measured" },
+              { name: "AI Property Crime Risk Model", weight: 0.25, value: 79, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Crime Rate: 84",
+              positive: "Better than 82% of Southern California communities for property safety",
+              negative: "Falls behind 18% of comparable neighborhoods in property crime prevention",
+            },
+          },
+          {
+            name: "Traffic Safety",
+            score: 79,
+            confidence: 85,
+            sources: [
+              { name: "NHTSA Fatality Analysis Reporting System", weight: 0.4, value: 81, type: "measured" },
+              { name: "CA Office of Traffic Safety Rankings", weight: 0.35, value: 80, type: "measured" },
+              { name: "AI Traffic Incident Density Model", weight: 0.25, value: 74, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Traffic Safety: 79",
+              positive: "Better than 73% of mid-size California cities for traffic-related safety",
+              negative: "Falls behind 27% of comparable neighborhoods in traffic safety outcomes",
+            },
+          },
+          {
+            name: "Emergency Response Time",
+            score: 86,
+            confidence: 88,
+            sources: [
+              { name: "NFPA Response Time Benchmarks", weight: 0.4, value: 88, type: "measured" },
+              { name: "Irvine Fire & Rescue Dispatch Records", weight: 0.35, value: 87, type: "measured" },
+              { name: "AI Emergency Coverage Gap Estimate", weight: 0.25, value: 81, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Emergency Response Time: 86",
+              positive: "Better than 84% of suburban communities for emergency services response",
+              negative: "Falls behind 16% of comparable neighborhoods in emergency response speed",
+            },
+          },
+        ],
+      },
+      {
+        label: "Community",
+        score: 75,
+        factors: [
+          {
+            name: "Family Friendliness",
+            score: 92,
+            confidence: 91,
+            sources: [
+              { name: "GreatSchools District Rating", weight: 0.4, value: 94, type: "measured" },
+              { name: "Census ACS Family Household Data", weight: 0.35, value: 93, type: "measured" },
+              { name: "AI Family Suitability Index", weight: 0.25, value: 87, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Family Friendliness: 92",
+              positive: "Better than 96% of California communities for raising a family",
+              negative: "Falls behind 4% of comparable neighborhoods in family-oriented amenities",
+            },
+          },
+          {
+            name: "Cultural Amenities",
+            score: 62,
+            confidence: 78,
+            sources: [
+              { name: "NEA Arts & Culture Survey", weight: 0.4, value: 64, type: "measured" },
+              { name: "Yelp Cultural Venue Density", weight: 0.35, value: 63, type: "measured" },
+              { name: "AI Cultural Vibrancy Estimate", weight: 0.25, value: 57, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Cultural Amenities: 62",
+              positive: "Better than 55% of suburban communities for cultural offerings",
+              negative: "Falls behind 45% of comparable neighborhoods in cultural richness and access",
+            },
+          },
+          {
+            name: "Diversity Index",
+            score: 77,
+            confidence: 92,
+            sources: [
+              { name: "Census ACS Diversity & Inclusion Index", weight: 0.45, value: 79, type: "measured" },
+              { name: "USA Today Diversity Index", weight: 0.3, value: 78, type: "measured" },
+              { name: "AI Demographic Diversity Model", weight: 0.25, value: 72, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Diversity Index: 77",
+              positive: "Better than 72% of Orange County neighborhoods for demographic diversity",
+              negative: "Falls behind 28% of comparable neighborhoods in community diversity",
+            },
+          },
+          {
+            name: "Nightlife & Entertainment",
+            score: 45,
+            confidence: 74,
+            sources: [
+              { name: "Yelp Nightlife Venue Index", weight: 0.4, value: 47, type: "measured" },
+              { name: "Google Maps Late-Night POI Density", weight: 0.35, value: 46, type: "measured" },
+              { name: "AI Entertainment Activity Estimate", weight: 0.25, value: 40, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Nightlife & Entertainment: 45",
+              positive: "Better than 34% of suburban neighborhoods for evening entertainment",
+              negative: "Falls behind 66% of comparable neighborhoods in nightlife and entertainment options",
+            },
+          },
+        ],
+      },
+      {
+        label: "Growth",
+        score: 74,
+        factors: [
+          {
+            name: "Job Market Strength",
+            score: 82,
+            confidence: 89,
+            sources: [
+              { name: "BLS Local Area Unemployment Statistics", weight: 0.4, value: 84, type: "measured" },
+              { name: "Census LEHD Employment Data", weight: 0.35, value: 83, type: "measured" },
+              { name: "AI Job Growth Trajectory Model", weight: 0.25, value: 77, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Job Market Strength: 82",
+              positive: "Better than 78% of California metro areas for employment opportunity",
+              negative: "Falls behind 22% of comparable neighborhoods in job market vitality",
+            },
+          },
+          {
+            name: "Property Value Trend",
+            score: 71,
+            confidence: 86,
+            sources: [
+              { name: "Zillow Home Value Index", weight: 0.4, value: 73, type: "measured" },
+              { name: "CoreLogic Home Price Index", weight: 0.35, value: 72, type: "measured" },
+              { name: "AI Property Appreciation Forecast", weight: 0.25, value: 66, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Value Trend: 71",
+              positive: "Better than 64% of Southern California markets for property appreciation",
+              negative: "Falls behind 36% of comparable neighborhoods in property value growth trajectory",
+            },
+          },
+          {
+            name: "New Development Pipeline",
+            score: 68,
+            confidence: 79,
+            sources: [
+              { name: "City of Irvine Permit Records", weight: 0.4, value: 70, type: "measured" },
+              { name: "CoStar Commercial Development Tracker", weight: 0.35, value: 69, type: "measured" },
+              { name: "AI Development Momentum Estimate", weight: 0.25, value: 63, type: "estimated" },
+            ],
+            frames: {
+              neutral: "New Development Pipeline: 68",
+              positive: "Better than 61% of Orange County cities for new construction activity",
+              negative: "Falls behind 39% of comparable neighborhoods in development momentum",
+            },
+          },
+          {
+            name: "Rent Affordability",
+            score: 58,
+            confidence: 91,
+            sources: [
+              { name: "Census ACS Median Gross Rent", weight: 0.4, value: 60, type: "measured" },
+              { name: "Apartment List Rent Estimates", weight: 0.35, value: 59, type: "measured" },
+              { name: "AI Rent Burden Projection Model", weight: 0.25, value: 53, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Rent Affordability: 58",
+              positive: "Better than 49% of Orange County neighborhoods for rental affordability",
+              negative: "Falls behind 51% of comparable neighborhoods in rental cost accessibility",
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────────
+  // SANTA MONICA — Excellent livability, high growth, expensive
+  // ──────────────────────────────────────────────
+  {
+    id: "santa-monica",
+    name: "Santa Monica",
+    coordinates: { lat: 34.0195, lng: -118.4912 },
+    overallScore: 84,
+    categories: [
+      {
+        label: "Livability",
+        score: 91,
+        factors: [
+          {
+            name: "Walkability",
+            score: 88,
+            confidence: 93,
+            sources: [
+              { name: "Walk Score Index", weight: 0.45, value: 90, type: "measured" },
+              { name: "USDOT Pedestrian Infrastructure Survey", weight: 0.3, value: 89, type: "measured" },
+              { name: "AI Pedestrian Activity Model", weight: 0.25, value: 83, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Walkability: 88",
+              positive: "Better than 91% of Los Angeles County neighborhoods for pedestrian friendliness",
+              negative: "Falls behind 9% of comparable neighborhoods in walkability infrastructure",
+            },
+          },
+          {
+            name: "Transit Access",
+            score: 82,
+            confidence: 88,
+            sources: [
+              { name: "LA Metro Ridership & Coverage Data", weight: 0.4, value: 84, type: "measured" },
+              { name: "AllTransit Performance Score", weight: 0.35, value: 83, type: "measured" },
+              { name: "AI Transit Connectivity Estimate", weight: 0.25, value: 77, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Transit Access: 82",
+              positive: "Better than 85% of LA Westside communities for public transit connectivity",
+              negative: "Falls behind 15% of comparable neighborhoods in transit service quality",
+            },
+          },
+          {
+            name: "Parks & Recreation",
+            score: 89,
+            confidence: 91,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 91, type: "measured" },
+              { name: "Santa Monica Recreation & Parks Inventory", weight: 0.35, value: 90, type: "measured" },
+              { name: "AI Green Space Coverage Model", weight: 0.25, value: 84, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Parks & Recreation: 89",
+              positive: "Better than 92% of coastal California cities for park access and outdoor recreation",
+              negative: "Falls behind 8% of comparable neighborhoods in recreational space availability",
+            },
+          },
+          {
+            name: "Grocery & Essentials Access",
+            score: 90,
+            confidence: 92,
+            sources: [
+              { name: "USDA Food Access Research Atlas", weight: 0.4, value: 92, type: "measured" },
+              { name: "Yelp Business Density Index", weight: 0.35, value: 91, type: "measured" },
+              { name: "AI Essential Services Proximity Model", weight: 0.25, value: 85, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Grocery & Essentials Access: 90",
+              positive: "Better than 93% of Los Angeles neighborhoods for everyday shopping and services",
+              negative: "Falls behind 7% of comparable neighborhoods in essential services convenience",
+            },
+          },
+        ],
+      },
+      {
+        label: "Safety",
+        score: 68,
+        factors: [
+          {
+            name: "Violent Crime Rate",
+            score: 64,
+            confidence: 92,
+            sources: [
+              { name: "FBI UCR Crime Statistics", weight: 0.45, value: 66, type: "measured" },
+              { name: "Santa Monica PD CompStat Reports", weight: 0.35, value: 65, type: "measured" },
+              { name: "AI Crime Trend Projection", weight: 0.2, value: 58, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Violent Crime Rate: 64",
+              positive: "Better than 57% of urban coastal communities for violent crime safety",
+              negative: "Falls behind 43% of comparable neighborhoods in violent crime prevention",
+            },
+          },
+          {
+            name: "Property Crime Rate",
+            score: 58,
+            confidence: 90,
+            sources: [
+              { name: "FBI UCR Property Crime Data", weight: 0.4, value: 60, type: "measured" },
+              { name: "Santa Monica PD Property Crime Reports", weight: 0.35, value: 59, type: "measured" },
+              { name: "AI Property Crime Risk Model", weight: 0.25, value: 53, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Crime Rate: 58",
+              positive: "Better than 50% of high-density LA neighborhoods for property safety",
+              negative: "Falls behind 50% of comparable neighborhoods in property crime prevention",
+            },
+          },
+          {
+            name: "Insurance Cost Index",
+            score: 48,
+            confidence: 86,
+            sources: [
+              { name: "NAIC Homeowner Insurance Rate Database", weight: 0.4, value: 50, type: "measured" },
+              { name: "CA DOI Rate Filing Data", weight: 0.35, value: 49, type: "measured" },
+              { name: "AI Insurance Risk Premium Estimate", weight: 0.25, value: 43, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Insurance Cost Index: 48",
+              positive: "Better than 39% of coastal California neighborhoods for insurance affordability",
+              negative: "Falls behind 61% of comparable neighborhoods in insurance cost competitiveness",
+            },
+          },
+          {
+            name: "Emergency Response Time",
+            score: 81,
+            confidence: 87,
+            sources: [
+              { name: "NFPA Response Time Benchmarks", weight: 0.4, value: 83, type: "measured" },
+              { name: "Santa Monica Fire Dept Dispatch Records", weight: 0.35, value: 82, type: "measured" },
+              { name: "AI Emergency Coverage Gap Estimate", weight: 0.25, value: 76, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Emergency Response Time: 81",
+              positive: "Better than 76% of urban neighborhoods for emergency services accessibility",
+              negative: "Falls behind 24% of comparable neighborhoods in emergency response speed",
+            },
+          },
+        ],
+      },
+      {
+        label: "Community",
+        score: 82,
+        factors: [
+          {
+            name: "Family Friendliness",
+            score: 74,
+            confidence: 85,
+            sources: [
+              { name: "GreatSchools District Rating", weight: 0.4, value: 76, type: "measured" },
+              { name: "Census ACS Family Household Data", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Family Suitability Index", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Family Friendliness: 74",
+              positive: "Better than 68% of urban LA neighborhoods for family living",
+              negative: "Falls behind 32% of comparable neighborhoods in family-oriented resources",
+            },
+          },
+          {
+            name: "Cultural Amenities",
+            score: 85,
+            confidence: 89,
+            sources: [
+              { name: "NEA Arts & Culture Survey", weight: 0.4, value: 87, type: "measured" },
+              { name: "Yelp Cultural Venue Density", weight: 0.35, value: 86, type: "measured" },
+              { name: "AI Cultural Vibrancy Estimate", weight: 0.25, value: 80, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Cultural Amenities: 85",
+              positive: "Better than 87% of Southern California neighborhoods for arts and culture access",
+              negative: "Falls behind 13% of comparable neighborhoods in cultural programming and venues",
+            },
+          },
+          {
+            name: "Diversity Index",
+            score: 72,
+            confidence: 90,
+            sources: [
+              { name: "Census ACS Diversity & Inclusion Index", weight: 0.45, value: 74, type: "measured" },
+              { name: "USA Today Diversity Index", weight: 0.3, value: 73, type: "measured" },
+              { name: "AI Demographic Diversity Model", weight: 0.25, value: 67, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Diversity Index: 72",
+              positive: "Better than 65% of Westside LA communities for demographic diversity",
+              negative: "Falls behind 35% of comparable neighborhoods in community diversity representation",
+            },
+          },
+          {
+            name: "Nightlife & Entertainment",
+            score: 79,
+            confidence: 86,
+            sources: [
+              { name: "Yelp Nightlife Venue Index", weight: 0.4, value: 81, type: "measured" },
+              { name: "Google Maps Late-Night POI Density", weight: 0.35, value: 80, type: "measured" },
+              { name: "AI Entertainment Activity Estimate", weight: 0.25, value: 74, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Nightlife & Entertainment: 79",
+              positive: "Better than 76% of LA neighborhoods for evening entertainment options",
+              negative: "Falls behind 24% of comparable neighborhoods in nightlife variety and accessibility",
+            },
+          },
+        ],
+      },
+      {
+        label: "Growth",
+        score: 88,
+        factors: [
+          {
+            name: "Job Market Strength",
+            score: 86,
+            confidence: 91,
+            sources: [
+              { name: "BLS Local Area Unemployment Statistics", weight: 0.4, value: 88, type: "measured" },
+              { name: "Census LEHD Employment Data", weight: 0.35, value: 87, type: "measured" },
+              { name: "AI Job Growth Trajectory Model", weight: 0.25, value: 81, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Job Market Strength: 86",
+              positive: "Better than 88% of LA metro sub-markets for employment opportunity and growth",
+              negative: "Falls behind 12% of comparable neighborhoods in job market dynamism",
+            },
+          },
+          {
+            name: "Property Value Trend",
+            score: 88,
+            confidence: 93,
+            sources: [
+              { name: "Zillow Home Value Index", weight: 0.4, value: 90, type: "measured" },
+              { name: "CoreLogic Home Price Index", weight: 0.35, value: 89, type: "measured" },
+              { name: "AI Property Appreciation Forecast", weight: 0.25, value: 83, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Value Trend: 88",
+              positive: "Better than 90% of Southern California markets for sustained property appreciation",
+              negative: "Falls behind 10% of comparable neighborhoods in long-term property value gains",
+            },
+          },
+          {
+            name: "New Development Pipeline",
+            score: 84,
+            confidence: 85,
+            sources: [
+              { name: "City of Santa Monica Permit Records", weight: 0.4, value: 86, type: "measured" },
+              { name: "CoStar Commercial Development Tracker", weight: 0.35, value: 85, type: "measured" },
+              { name: "AI Development Momentum Estimate", weight: 0.25, value: 79, type: "estimated" },
+            ],
+            frames: {
+              neutral: "New Development Pipeline: 84",
+              positive: "Better than 83% of Westside LA communities for new development investment",
+              negative: "Falls behind 17% of comparable neighborhoods in development pipeline volume",
+            },
+          },
+          {
+            name: "Rent Affordability",
+            score: 32,
+            confidence: 94,
+            sources: [
+              { name: "Census ACS Median Gross Rent", weight: 0.4, value: 34, type: "measured" },
+              { name: "Apartment List Rent Estimates", weight: 0.35, value: 33, type: "measured" },
+              { name: "AI Rent Burden Projection Model", weight: 0.25, value: 27, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Rent Affordability: 32",
+              positive: "Better than 22% of coastal California neighborhoods for rental affordability",
+              negative: "Falls behind 78% of comparable neighborhoods in rental cost accessibility",
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────────
+  // PASADENA — Culture-rich, diverse, moderate across the board
+  // ──────────────────────────────────────────────
+  {
+    id: "pasadena",
+    name: "Pasadena",
+    coordinates: { lat: 34.1478, lng: -118.1445 },
+    overallScore: 76,
+    categories: [
+      {
+        label: "Livability",
+        score: 77,
+        factors: [
+          {
+            name: "Walkability",
+            score: 72,
+            confidence: 86,
+            sources: [
+              { name: "Walk Score Index", weight: 0.45, value: 74, type: "measured" },
+              { name: "USDOT Pedestrian Infrastructure Survey", weight: 0.3, value: 73, type: "measured" },
+              { name: "AI Pedestrian Activity Model", weight: 0.25, value: 67, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Walkability: 72",
+              positive: "Better than 68% of San Gabriel Valley neighborhoods for pedestrian friendliness",
+              negative: "Falls behind 32% of comparable neighborhoods in walkability and pedestrian safety",
+            },
+          },
+          {
+            name: "Transit Access",
+            score: 74,
+            confidence: 84,
+            sources: [
+              { name: "LA Metro Ridership & Coverage Data", weight: 0.4, value: 76, type: "measured" },
+              { name: "AllTransit Performance Score", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Transit Connectivity Estimate", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Transit Access: 74",
+              positive: "Better than 71% of San Gabriel Valley communities for public transit service",
+              negative: "Falls behind 29% of comparable neighborhoods in transit coverage and frequency",
+            },
+          },
+          {
+            name: "Parks & Recreation",
+            score: 78,
+            confidence: 87,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 80, type: "measured" },
+              { name: "Pasadena Parks & Rec Department Inventory", weight: 0.35, value: 79, type: "measured" },
+              { name: "AI Green Space Coverage Model", weight: 0.25, value: 73, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Parks & Recreation: 78",
+              positive: "Better than 74% of LA-area neighborhoods for park access and green space",
+              negative: "Falls behind 26% of comparable neighborhoods in recreational amenities",
+            },
+          },
+          {
+            name: "Grocery & Essentials Access",
+            score: 80,
+            confidence: 89,
+            sources: [
+              { name: "USDA Food Access Research Atlas", weight: 0.4, value: 82, type: "measured" },
+              { name: "Yelp Business Density Index", weight: 0.35, value: 81, type: "measured" },
+              { name: "AI Essential Services Proximity Model", weight: 0.25, value: 75, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Grocery & Essentials Access: 80",
+              positive: "Better than 76% of San Gabriel Valley neighborhoods for essential services",
+              negative: "Falls behind 24% of comparable neighborhoods in everyday shopping convenience",
+            },
+          },
+        ],
+      },
+      {
+        label: "Safety",
+        score: 72,
+        factors: [
+          {
+            name: "Violent Crime Rate",
+            score: 71,
+            confidence: 91,
+            sources: [
+              { name: "FBI UCR Crime Statistics", weight: 0.45, value: 73, type: "measured" },
+              { name: "Pasadena PD Annual Crime Report", weight: 0.35, value: 72, type: "measured" },
+              { name: "AI Crime Trend Projection", weight: 0.2, value: 65, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Violent Crime Rate: 71",
+              positive: "Better than 66% of mid-size California cities for violent crime safety",
+              negative: "Falls behind 34% of comparable neighborhoods in violent crime outcomes",
+            },
+          },
+          {
+            name: "Property Crime Rate",
+            score: 66,
+            confidence: 89,
+            sources: [
+              { name: "FBI UCR Property Crime Data", weight: 0.4, value: 68, type: "measured" },
+              { name: "Pasadena PD Property Crime Reports", weight: 0.35, value: 67, type: "measured" },
+              { name: "AI Property Crime Risk Model", weight: 0.25, value: 61, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Crime Rate: 66",
+              positive: "Better than 59% of LA County neighborhoods for property crime safety",
+              negative: "Falls behind 41% of comparable neighborhoods in property crime prevention",
+            },
+          },
+          {
+            name: "Traffic Safety",
+            score: 69,
+            confidence: 83,
+            sources: [
+              { name: "NHTSA Fatality Analysis Reporting System", weight: 0.4, value: 71, type: "measured" },
+              { name: "CA Office of Traffic Safety Rankings", weight: 0.35, value: 70, type: "measured" },
+              { name: "AI Traffic Incident Density Model", weight: 0.25, value: 64, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Traffic Safety: 69",
+              positive: "Better than 62% of San Gabriel Valley communities for traffic-related safety",
+              negative: "Falls behind 38% of comparable neighborhoods in traffic safety performance",
+            },
+          },
+          {
+            name: "Emergency Response Time",
+            score: 77,
+            confidence: 86,
+            sources: [
+              { name: "NFPA Response Time Benchmarks", weight: 0.4, value: 79, type: "measured" },
+              { name: "Pasadena Fire Department Dispatch Records", weight: 0.35, value: 78, type: "measured" },
+              { name: "AI Emergency Coverage Gap Estimate", weight: 0.25, value: 72, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Emergency Response Time: 77",
+              positive: "Better than 72% of mid-size California cities for emergency response quality",
+              negative: "Falls behind 28% of comparable neighborhoods in emergency response speed",
+            },
+          },
+        ],
+      },
+      {
+        label: "Community",
+        score: 83,
+        factors: [
+          {
+            name: "Family Friendliness",
+            score: 79,
+            confidence: 87,
+            sources: [
+              { name: "GreatSchools District Rating", weight: 0.4, value: 81, type: "measured" },
+              { name: "Census ACS Family Household Data", weight: 0.35, value: 80, type: "measured" },
+              { name: "AI Family Suitability Index", weight: 0.25, value: 74, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Family Friendliness: 79",
+              positive: "Better than 75% of LA County neighborhoods for family-oriented living",
+              negative: "Falls behind 25% of comparable neighborhoods in family support infrastructure",
+            },
+          },
+          {
+            name: "Cultural Amenities",
+            score: 88,
+            confidence: 92,
+            sources: [
+              { name: "NEA Arts & Culture Survey", weight: 0.4, value: 90, type: "measured" },
+              { name: "Yelp Cultural Venue Density", weight: 0.35, value: 89, type: "measured" },
+              { name: "AI Cultural Vibrancy Estimate", weight: 0.25, value: 83, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Cultural Amenities: 88",
+              positive: "Better than 91% of Southern California neighborhoods for museums, galleries, and cultural programming",
+              negative: "Falls behind 9% of comparable neighborhoods in cultural richness and venue diversity",
+            },
+          },
+          {
+            name: "Diversity Index",
+            score: 91,
+            confidence: 94,
+            sources: [
+              { name: "Census ACS Diversity & Inclusion Index", weight: 0.45, value: 93, type: "measured" },
+              { name: "USA Today Diversity Index", weight: 0.3, value: 92, type: "measured" },
+              { name: "AI Demographic Diversity Model", weight: 0.25, value: 87, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Diversity Index: 91",
+              positive: "Better than 94% of LA County neighborhoods for ethnic, cultural, and economic diversity",
+              negative: "Falls behind 6% of comparable neighborhoods in community diversity representation",
+            },
+          },
+          {
+            name: "Nightlife & Entertainment",
+            score: 68,
+            confidence: 81,
+            sources: [
+              { name: "Yelp Nightlife Venue Index", weight: 0.4, value: 70, type: "measured" },
+              { name: "Google Maps Late-Night POI Density", weight: 0.35, value: 69, type: "measured" },
+              { name: "AI Entertainment Activity Estimate", weight: 0.25, value: 63, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Nightlife & Entertainment: 68",
+              positive: "Better than 62% of San Gabriel Valley neighborhoods for evening entertainment",
+              negative: "Falls behind 38% of comparable neighborhoods in nightlife options and vibrancy",
+            },
+          },
+        ],
+      },
+      {
+        label: "Growth",
+        score: 72,
+        factors: [
+          {
+            name: "Job Market Strength",
+            score: 75,
+            confidence: 87,
+            sources: [
+              { name: "BLS Local Area Unemployment Statistics", weight: 0.4, value: 77, type: "measured" },
+              { name: "Census LEHD Employment Data", weight: 0.35, value: 76, type: "measured" },
+              { name: "AI Job Growth Trajectory Model", weight: 0.25, value: 70, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Job Market Strength: 75",
+              positive: "Better than 70% of San Gabriel Valley communities for local employment strength",
+              negative: "Falls behind 30% of comparable neighborhoods in job market competitiveness",
+            },
+          },
+          {
+            name: "Property Value Trend",
+            score: 74,
+            confidence: 88,
+            sources: [
+              { name: "Zillow Home Value Index", weight: 0.4, value: 76, type: "measured" },
+              { name: "CoreLogic Home Price Index", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Property Appreciation Forecast", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Value Trend: 74",
+              positive: "Better than 69% of LA County sub-markets for steady property appreciation",
+              negative: "Falls behind 31% of comparable neighborhoods in property value growth momentum",
+            },
+          },
+          {
+            name: "New Development Pipeline",
+            score: 70,
+            confidence: 80,
+            sources: [
+              { name: "City of Pasadena Permit Records", weight: 0.4, value: 72, type: "measured" },
+              { name: "CoStar Commercial Development Tracker", weight: 0.35, value: 71, type: "measured" },
+              { name: "AI Development Momentum Estimate", weight: 0.25, value: 65, type: "estimated" },
+            ],
+            frames: {
+              neutral: "New Development Pipeline: 70",
+              positive: "Better than 64% of San Gabriel Valley cities for active construction and investment",
+              negative: "Falls behind 36% of comparable neighborhoods in new development activity",
+            },
+          },
+          {
+            name: "Rent Affordability",
+            score: 55,
+            confidence: 90,
+            sources: [
+              { name: "Census ACS Median Gross Rent", weight: 0.4, value: 57, type: "measured" },
+              { name: "Apartment List Rent Estimates", weight: 0.35, value: 56, type: "measured" },
+              { name: "AI Rent Burden Projection Model", weight: 0.25, value: 50, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Rent Affordability: 55",
+              positive: "Better than 46% of LA County neighborhoods for rental cost manageability",
+              negative: "Falls behind 54% of comparable neighborhoods in rental affordability",
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────────
+  // WEST HOLLYWOOD — Walkable, vibrant nightlife, LGBTQ+ friendly
+  // ──────────────────────────────────────────────
+  {
+    id: "west-hollywood",
+    name: "West Hollywood",
+    coordinates: { lat: 34.0900, lng: -118.3617 },
+    overallScore: 80,
+    categories: [
+      {
+        label: "Livability",
+        score: 85,
+        factors: [
+          {
+            name: "Walkability",
+            score: 92,
+            confidence: 95,
+            sources: [
+              { name: "Walk Score Index", weight: 0.45, value: 94, type: "measured" },
+              { name: "USDOT Pedestrian Infrastructure Survey", weight: 0.3, value: 93, type: "measured" },
+              { name: "AI Pedestrian Activity Model", weight: 0.25, value: 87, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Walkability: 92",
+              positive: "Better than 96% of Los Angeles County neighborhoods for pedestrian infrastructure and access",
+              negative: "Falls behind 4% of comparable neighborhoods in walkability",
+            },
+          },
+          {
+            name: "Transit Access",
+            score: 78,
+            confidence: 85,
+            sources: [
+              { name: "LA Metro Ridership & Coverage Data", weight: 0.4, value: 80, type: "measured" },
+              { name: "AllTransit Performance Score", weight: 0.35, value: 79, type: "measured" },
+              { name: "AI Transit Connectivity Estimate", weight: 0.25, value: 73, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Transit Access: 78",
+              positive: "Better than 75% of LA urban neighborhoods for transit availability",
+              negative: "Falls behind 25% of comparable neighborhoods in public transit service quality",
+            },
+          },
+          {
+            name: "Parks & Recreation",
+            score: 71,
+            confidence: 82,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 73, type: "measured" },
+              { name: "WeHo Parks & Facilities Inventory", weight: 0.35, value: 72, type: "measured" },
+              { name: "AI Green Space Coverage Model", weight: 0.25, value: 66, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Parks & Recreation: 71",
+              positive: "Better than 65% of high-density urban neighborhoods for park and recreation access",
+              negative: "Falls behind 35% of comparable neighborhoods in green space availability",
+            },
+          },
+          {
+            name: "Grocery & Essentials Access",
+            score: 87,
+            confidence: 90,
+            sources: [
+              { name: "USDA Food Access Research Atlas", weight: 0.4, value: 89, type: "measured" },
+              { name: "Yelp Business Density Index", weight: 0.35, value: 88, type: "measured" },
+              { name: "AI Essential Services Proximity Model", weight: 0.25, value: 82, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Grocery & Essentials Access: 87",
+              positive: "Better than 89% of urban LA neighborhoods for daily shopping and essential services",
+              negative: "Falls behind 11% of comparable neighborhoods in everyday convenience access",
+            },
+          },
+        ],
+      },
+      {
+        label: "Safety",
+        score: 63,
+        factors: [
+          {
+            name: "Violent Crime Rate",
+            score: 59,
+            confidence: 90,
+            sources: [
+              { name: "FBI UCR Crime Statistics", weight: 0.45, value: 61, type: "measured" },
+              { name: "LA County Sheriff Crime Data (WeHo Station)", weight: 0.35, value: 60, type: "measured" },
+              { name: "AI Crime Trend Projection", weight: 0.2, value: 53, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Violent Crime Rate: 59",
+              positive: "Better than 51% of dense urban LA neighborhoods for violent crime safety",
+              negative: "Falls behind 49% of comparable neighborhoods in violent crime prevention",
+            },
+          },
+          {
+            name: "Property Crime Rate",
+            score: 52,
+            confidence: 88,
+            sources: [
+              { name: "FBI UCR Property Crime Data", weight: 0.4, value: 54, type: "measured" },
+              { name: "LA County Sheriff Property Crime Reports", weight: 0.35, value: 53, type: "measured" },
+              { name: "AI Property Crime Risk Model", weight: 0.25, value: 47, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Crime Rate: 52",
+              positive: "Better than 43% of entertainment-district neighborhoods for property safety",
+              negative: "Falls behind 57% of comparable neighborhoods in property crime rates",
+            },
+          },
+          {
+            name: "Traffic Safety",
+            score: 61,
+            confidence: 82,
+            sources: [
+              { name: "NHTSA Fatality Analysis Reporting System", weight: 0.4, value: 63, type: "measured" },
+              { name: "CA Office of Traffic Safety Rankings", weight: 0.35, value: 62, type: "measured" },
+              { name: "AI Traffic Incident Density Model", weight: 0.25, value: 56, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Traffic Safety: 61",
+              positive: "Better than 53% of high-density LA neighborhoods for pedestrian and vehicle safety",
+              negative: "Falls behind 47% of comparable neighborhoods in traffic safety outcomes",
+            },
+          },
+          {
+            name: "Emergency Response Time",
+            score: 74,
+            confidence: 84,
+            sources: [
+              { name: "NFPA Response Time Benchmarks", weight: 0.4, value: 76, type: "measured" },
+              { name: "LA County Fire Dept Dispatch Records", weight: 0.35, value: 75, type: "measured" },
+              { name: "AI Emergency Coverage Gap Estimate", weight: 0.25, value: 69, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Emergency Response Time: 74",
+              positive: "Better than 68% of dense urban neighborhoods for emergency response access",
+              negative: "Falls behind 32% of comparable neighborhoods in emergency services speed",
+            },
+          },
+        ],
+      },
+      {
+        label: "Community",
+        score: 91,
+        factors: [
+          {
+            name: "LGBTQ+ Friendliness",
+            score: 98,
+            confidence: 96,
+            sources: [
+              { name: "HRC Municipal Equality Index", weight: 0.4, value: 99, type: "measured" },
+              { name: "Census ACS Same-Sex Household Data", weight: 0.35, value: 98, type: "measured" },
+              { name: "AI Inclusivity & Representation Model", weight: 0.25, value: 95, type: "estimated" },
+            ],
+            frames: {
+              neutral: "LGBTQ+ Friendliness: 98",
+              positive: "Better than 99% of U.S. neighborhoods for LGBTQ+ inclusivity and representation",
+              negative: "Falls behind 1% of comparable neighborhoods in LGBTQ+ community support",
+            },
+          },
+          {
+            name: "Nightlife & Entertainment",
+            score: 95,
+            confidence: 94,
+            sources: [
+              { name: "Yelp Nightlife Venue Index", weight: 0.4, value: 96, type: "measured" },
+              { name: "Google Maps Late-Night POI Density", weight: 0.35, value: 96, type: "measured" },
+              { name: "AI Entertainment Activity Estimate", weight: 0.25, value: 91, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Nightlife & Entertainment: 95",
+              positive: "Better than 97% of U.S. neighborhoods for nightlife density, variety, and quality",
+              negative: "Falls behind 3% of comparable neighborhoods in entertainment offerings",
+            },
+          },
+          {
+            name: "Cultural Amenities",
+            score: 82,
+            confidence: 88,
+            sources: [
+              { name: "NEA Arts & Culture Survey", weight: 0.4, value: 84, type: "measured" },
+              { name: "Yelp Cultural Venue Density", weight: 0.35, value: 83, type: "measured" },
+              { name: "AI Cultural Vibrancy Estimate", weight: 0.25, value: 77, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Cultural Amenities: 82",
+              positive: "Better than 80% of LA neighborhoods for arts, culture, and creative community",
+              negative: "Falls behind 20% of comparable neighborhoods in cultural venue access and programming",
+            },
+          },
+          {
+            name: "Diversity Index",
+            score: 84,
+            confidence: 91,
+            sources: [
+              { name: "Census ACS Diversity & Inclusion Index", weight: 0.45, value: 86, type: "measured" },
+              { name: "USA Today Diversity Index", weight: 0.3, value: 85, type: "measured" },
+              { name: "AI Demographic Diversity Model", weight: 0.25, value: 79, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Diversity Index: 84",
+              positive: "Better than 82% of LA County neighborhoods for demographic and cultural diversity",
+              negative: "Falls behind 18% of comparable neighborhoods in community diversity breadth",
+            },
+          },
+        ],
+      },
+      {
+        label: "Growth",
+        score: 79,
+        factors: [
+          {
+            name: "Job Market Strength",
+            score: 80,
+            confidence: 87,
+            sources: [
+              { name: "BLS Local Area Unemployment Statistics", weight: 0.4, value: 82, type: "measured" },
+              { name: "Census LEHD Employment Data", weight: 0.35, value: 81, type: "measured" },
+              { name: "AI Job Growth Trajectory Model", weight: 0.25, value: 75, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Job Market Strength: 80",
+              positive: "Better than 77% of urban LA neighborhoods for local job availability and growth",
+              negative: "Falls behind 23% of comparable neighborhoods in employment market strength",
+            },
+          },
+          {
+            name: "Property Value Trend",
+            score: 83,
+            confidence: 90,
+            sources: [
+              { name: "Zillow Home Value Index", weight: 0.4, value: 85, type: "measured" },
+              { name: "CoreLogic Home Price Index", weight: 0.35, value: 84, type: "measured" },
+              { name: "AI Property Appreciation Forecast", weight: 0.25, value: 78, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Value Trend: 83",
+              positive: "Better than 82% of LA metro neighborhoods for property value appreciation",
+              negative: "Falls behind 18% of comparable neighborhoods in property value growth trajectory",
+            },
+          },
+          {
+            name: "New Development Pipeline",
+            score: 76,
+            confidence: 82,
+            sources: [
+              { name: "City of West Hollywood Permit Records", weight: 0.4, value: 78, type: "measured" },
+              { name: "CoStar Commercial Development Tracker", weight: 0.35, value: 77, type: "measured" },
+              { name: "AI Development Momentum Estimate", weight: 0.25, value: 71, type: "estimated" },
+            ],
+            frames: {
+              neutral: "New Development Pipeline: 76",
+              positive: "Better than 72% of LA urban neighborhoods for active development and investment",
+              negative: "Falls behind 28% of comparable neighborhoods in new construction momentum",
+            },
+          },
+          {
+            name: "Rent Affordability",
+            score: 38,
+            confidence: 93,
+            sources: [
+              { name: "Census ACS Median Gross Rent", weight: 0.4, value: 40, type: "measured" },
+              { name: "Apartment List Rent Estimates", weight: 0.35, value: 39, type: "measured" },
+              { name: "AI Rent Burden Projection Model", weight: 0.25, value: 33, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Rent Affordability: 38",
+              positive: "Better than 28% of Westside LA neighborhoods for rental affordability",
+              negative: "Falls behind 72% of comparable neighborhoods in rental cost accessibility",
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
+
+export function getNeighborhoodById(id) {
+  return neighborhoods.find((n) => n.id === id);
+}
+
+export function searchNeighborhoods(query) {
+  const lower = query.toLowerCase();
+  return neighborhoods.filter((n) => n.name.toLowerCase().includes(lower));
+}
