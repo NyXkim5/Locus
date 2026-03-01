@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import InputPage from './pages/InputPage'
@@ -78,7 +78,8 @@ function AnimatedRoutes() {
         className="min-h-screen"
       >
         <Routes location={location}>
-          <Route path="/" element={<InputPage />} />
+          <Route path="/" element={<Navigate to="/neighborhood/irvine" replace />} />
+          <Route path="/input" element={<InputPage />} />
           <Route path="/neighborhood/:id" element={<NeighborhoodPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="*" element={<NotFound />} />
