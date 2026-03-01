@@ -1,8 +1,9 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import { useEffect, useState, useCallback } from 'react'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { getNeighborhoodById } from '../data/neighborhoods'
+import { getNeighborhoodById, neighborhoods, getAllNeighborhoods } from '../data/neighborhoods'
 import { fetchListings } from '../services/listings'
+import { generateNeighborhood } from '../services/generateNeighborhood'
 import useStore from '../store/useStore'
 import TopBar from '../components/shared/TopBar'
 import ScoreCircle from '../components/shared/ScoreCircle'
@@ -181,6 +182,7 @@ function ListingSkeleton() {
 export default function NeighborhoodPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const neighborhood = getNeighborhoodById(id)
   const openChallenge = useStore((s) => s.openChallenge)
   const addToComparison = useStore((s) => s.addToComparison)
@@ -195,6 +197,32 @@ export default function NeighborhoodPage() {
   const [listingsLoading, setListingsLoading] = useState(true)
   const [listingsError, setListingsError] = useState(null)
   const [aiResponse, setAiResponse] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeIndex, setActiveIndex] = useState(-1)
+  const [showOverallScore, setShowOverallScore] = useState(Boolean(location.state?.showScore))
+  const [generating, setGenerating] = useState(false)
+  const [progressText, setProgressText] = useState('')
+  const [genError, setGenError] = useState(null)
+  const listboxRef = useRef(null)
+  const videoRef = useRef(null)
+
+  const allNeighborhoods = useMemo(() => getAllNeighborhoods(), [])
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return []
+    return allNeighborhoods.filter((n) =>
+      n.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [searchQuery, allNeighborhoods])
+  const trimmedQuery = searchQuery.trim()
+  const hasExactMatch = trimmedQuery.length > 0 && allNeighborhoods.some(
+    (n) => n.name.toLowerCase() === trimmedQuery.toLowerCase()
+  )
+  const showGenerateOption = trimmedQuery.length > 2 && !hasExactMatch
+  const isSearchOpen = searchResults.length > 0 || showGenerateOption
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.playbackRate = 0.8
+  }, [])
 
   useEffect(() => {
     collapseAll()
@@ -219,6 +247,67 @@ export default function NeighborhoodPage() {
   const handleAIResponse = useCallback((data) => {
     setAiResponse(data)
   }, [])
+
+  const handleSelectNeighborhood = useCallback((nextId) => {
+    setShowOverallScore(true)
+    setSearchQuery('')
+    setActiveIndex(-1)
+    navigate(`/neighborhood/${nextId}`, { state: { showScore: true } })
+  }, [navigate])
+
+  const handleGenerate = useCallback(async () => {
+    setGenerating(true)
+    setGenError(null)
+    setProgressText('Connecting to AI...')
+    try {
+      const result = await generateNeighborhood(trimmedQuery, setProgressText)
+      setShowOverallScore(true)
+      setSearchQuery('')
+      setActiveIndex(-1)
+      navigate(`/neighborhood/${result.id}`, { state: { showScore: true } })
+    } catch (err) {
+      setGenError(err.message)
+      setGenerating(false)
+    }
+  }, [trimmedQuery, navigate])
+
+  const handleSearchKeyDown = useCallback((e) => {
+    if (!isSearchOpen) return
+    const totalItems = searchResults.length + (showGenerateOption ? 1 : 0)
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setActiveIndex((prev) => (prev + 1) % totalItems)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setActiveIndex((prev) => (prev <= 0 ? totalItems - 1 : prev - 1))
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (activeIndex >= 0 && activeIndex < searchResults.length) {
+          handleSelectNeighborhood(searchResults[activeIndex].id)
+        } else if (activeIndex === searchResults.length && showGenerateOption) {
+          handleGenerate()
+        }
+        break
+      case 'Escape':
+        e.preventDefault()
+        setSearchQuery('')
+        setActiveIndex(-1)
+        break
+      default:
+        break
+    }
+  }, [isSearchOpen, activeIndex, searchResults, showGenerateOption, handleSelectNeighborhood, handleGenerate])
+
+  const handleSearchInputChange = (e) => {
+    const nextValue = e.target.value
+    setSearchQuery(nextValue)
+    setActiveIndex(-1)
+    setGenError(null)
+  }
 
   if (!neighborhood) {
     return (
@@ -300,69 +389,259 @@ export default function NeighborhoodPage() {
 
           {/* Right: Score + Categories */}
           <div>
-            {/* Overall Score */}
+            {/* Search then Overall Score */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="flex flex-col items-center mb-6"
+              className="mb-6"
             >
-              <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-3">
-                Overall Score
-              </span>
-              <ScoreCircle score={neighborhood.overallScore} size="lg" />
+              {!showOverallScore ? (
+                <div>
+                  {generating && (
+                    <div className="mb-4 px-3 py-3 rounded-[10px] border border-[var(--border)] bg-[var(--bg-surface)]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-4 h-4 rounded-full border-2 border-[var(--border)] border-t-[var(--accent)] animate-spin" />
+                        <p className="text-[13px] font-medium text-[var(--text-primary)]">{progressText || 'Generating...'}</p>
+                      </div>
+                      <p className="text-[12px] text-[var(--text-muted)]">This usually takes 10-15 seconds</p>
+                    </div>
+                  )}
 
-              {/* Sustainability badge */}
-              <SustainabilityBadge categories={neighborhood.categories} />
+                  <div className="flex justify-center mb-2">
+                    <video
+                      ref={videoRef}
+                      src="/davsan-logo.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-28 h-28 object-contain"
+                      style={{ mixBlendMode: 'multiply' }}
+                    />
+                  </div>
+                  <h2 className="text-[18px] font-semibold tracking-[-0.02em] mb-0.5 text-center">
+                    <span className="text-[var(--accent)]">LOCUS</span>
+                  </h2>
+                  <p className="text-[var(--text-muted)] text-[11px] uppercase tracking-[0.08em] mb-4 text-center">
+                    Neighborhood Intelligence, Debiased
+                  </p>
+                  <h3 className="text-[20px] font-semibold tracking-[-0.02em] mb-3 text-center">
+                    Where are you looking?
+                  </h3>
+                  <div className="relative">
+                    <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] px-4 py-3 focus-within:border-[var(--accent)] transition-colors">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2" className="mr-3 flex-shrink-0" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}
+                        onKeyDown={handleSearchKeyDown}
+                        placeholder="Search address or neighborhood"
+                        className="bg-transparent w-full text-[14px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+                        role="combobox"
+                        aria-expanded={isSearchOpen}
+                        aria-haspopup="listbox"
+                        aria-controls="neighborhood-search-listbox"
+                        aria-activedescendant={activeIndex >= 0 ? `neighborhood-option-${searchResults[activeIndex]?.id}` : undefined}
+                        aria-label="Search neighborhoods"
+                        autoComplete="off"
+                      />
+                    </div>
+                    {isSearchOpen && (
+                      <div
+                        ref={listboxRef}
+                        id="neighborhood-search-listbox"
+                        role="listbox"
+                        aria-label="Neighborhood search results"
+                        className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.1)] z-20"
+                      >
+                        {searchResults.map((n, i) => (
+                          <button
+                            key={n.id}
+                            id={`neighborhood-option-${n.id}`}
+                            role="option"
+                            aria-selected={i === activeIndex}
+                            onClick={() => handleSelectNeighborhood(n.id)}
+                            onMouseEnter={() => setActiveIndex(i)}
+                            className={`w-full text-left px-4 py-3 text-[14px] transition-colors flex items-center justify-between ${
+                              i === activeIndex ? 'bg-[var(--bg-elevated)]' : 'hover:bg-[var(--bg-elevated)]'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              {n.name}
+                              {n.isGenerated && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] font-medium">AI</span>
+                              )}
+                            </span>
+                            <span className="text-[12px] text-[var(--text-muted)]">Score: {n.overallScore}</span>
+                          </button>
+                        ))}
+                        {showGenerateOption && (
+                          <button
+                            id="neighborhood-option-generate"
+                            role="option"
+                            aria-selected={activeIndex === searchResults.length}
+                            onClick={handleGenerate}
+                            onMouseEnter={() => setActiveIndex(searchResults.length)}
+                            className={`w-full text-left px-4 py-3 text-[14px] transition-colors flex items-center gap-2 border-t border-[var(--border)] ${
+                              activeIndex === searchResults.length ? 'bg-[var(--bg-elevated)]' : 'hover:bg-[var(--bg-elevated)]'
+                            }`}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" className="flex-shrink-0">
+                              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                              <path d="M2 17l10 5 10-5" />
+                              <path d="M2 12l10 5 10-5" />
+                            </svg>
+                            <span className="text-[var(--accent)] font-medium">
+                              Generate AI analysis for <strong>{trimmedQuery}</strong>
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {genError && (
+                    <div className="mt-2 px-3 py-2 rounded-[8px] bg-[var(--score-low)]/10 border border-[var(--score-low)]/20">
+                      <p className="text-[12px] text-[var(--score-low)]">{genError}</p>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {neighborhoods.map((n) => (
+                      <button
+                        key={n.id}
+                        onClick={() => handleSelectNeighborhood(n.id)}
+                        className="px-3 py-1.5 text-[12px] text-[var(--text-secondary)] bg-[var(--bg-surface)] border border-[var(--border)] rounded-[6px] hover:border-[var(--accent)] hover:text-[var(--text-primary)] transition-all"
+                      >
+                        {n.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center w-full">
+                  <div className="relative w-full mb-4">
+                    <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] px-4 py-2.5 focus-within:border-[var(--accent)] transition-colors">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2" className="mr-2.5 flex-shrink-0" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}
+                        onKeyDown={handleSearchKeyDown}
+                        placeholder="Search another neighborhood"
+                        className="bg-transparent w-full text-[13px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+                        role="combobox"
+                        aria-expanded={isSearchOpen}
+                        aria-haspopup="listbox"
+                        aria-controls="neighborhood-search-listbox"
+                        aria-activedescendant={activeIndex >= 0 ? `neighborhood-option-${searchResults[activeIndex]?.id}` : undefined}
+                        aria-label="Search neighborhoods"
+                        autoComplete="off"
+                      />
+                    </div>
+                    {isSearchOpen && (
+                      <div
+                        ref={listboxRef}
+                        id="neighborhood-search-listbox"
+                        role="listbox"
+                        aria-label="Neighborhood search results"
+                        className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.1)] z-20"
+                      >
+                        {searchResults.map((n, i) => (
+                          <button
+                            key={n.id}
+                            id={`neighborhood-option-${n.id}`}
+                            role="option"
+                            aria-selected={i === activeIndex}
+                            onClick={() => handleSelectNeighborhood(n.id)}
+                            onMouseEnter={() => setActiveIndex(i)}
+                            className={`w-full text-left px-4 py-3 text-[14px] transition-colors flex items-center justify-between ${
+                              i === activeIndex ? 'bg-[var(--bg-elevated)]' : 'hover:bg-[var(--bg-elevated)]'
+                            }`}
+                          >
+                            <span>{n.name}</span>
+                            <span className="text-[12px] text-[var(--text-muted)]">Score: {n.overallScore}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-3">
+                    Overall Score
+                  </span>
+                  <ScoreCircle score={neighborhood.overallScore} size="lg" />
+                </div>
+                </div>
+              )}
+
+              {showOverallScore && (
+                <div className="flex justify-center mt-3">
+                  <SustainabilityBadge categories={neighborhood.categories} />
+                </div>
+              )}
             </motion.div>
 
             {/* Category Cards */}
-            <div className="space-y-3">
-              {categories.map((category, i) => (
-                <motion.div
-                  key={category.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + i * 0.08, duration: 0.4 }}
-                >
-                  <CategoryCard
-                    categoryKey={i}
-                    category={category}
-                    neighborhoodId={id}
-                    onChallengeFactor={handleChallenge}
-                  />
-                </motion.div>
-              ))}
-            </div>
+            {showOverallScore && (
+              <div className="space-y-3">
+                {categories.map((category, i) => (
+                  <motion.div
+                    key={category.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + i * 0.08, duration: 0.4 }}
+                  >
+                    <CategoryCard
+                      categoryKey={i}
+                      category={category}
+                      neighborhoodId={id}
+                      onChallengeFactor={handleChallenge}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
             {/* Action buttons */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="flex gap-2 mt-4"
-            >
-              <button
-                onClick={handleCompare}
-                disabled={comparisonIds.length >= 2 && !comparisonIds.includes(id)}
-                className="flex-1 py-3 border border-dashed border-[var(--border)] rounded-[10px] text-[13px] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            {showOverallScore && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="flex gap-2 mt-4"
               >
-                {alreadyInComparison ? 'View comparison' : '+ Compare'}
-              </button>
-              <button
-                onClick={handleToggleFavorite}
-                aria-label={favorites.includes(id) ? 'Remove from favorites' : 'Add to favorites'}
-                className={`w-12 flex items-center justify-center border rounded-[10px] transition-all ${
-                  favorites.includes(id)
-                    ? 'border-[var(--score-low)] bg-[var(--score-low)]/8 text-[var(--score-low)]'
-                    : 'border-dashed border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--score-low)] hover:text-[var(--score-low)]'
-                }`}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill={favorites.includes(id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              </button>
-            </motion.div>
+                <button
+                  onClick={handleCompare}
+                  disabled={comparisonIds.length >= 2 && !comparisonIds.includes(id)}
+                  className="flex-1 py-3 border border-dashed border-[var(--border)] rounded-[10px] text-[13px] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {alreadyInComparison ? 'View comparison' : '+ Compare'}
+                </button>
+                <button
+                  onClick={handleToggleFavorite}
+                  aria-label={favorites.includes(id) ? 'Remove from favorites' : 'Add to favorites'}
+                  className={`w-12 flex items-center justify-center border rounded-[10px] transition-all ${
+                    favorites.includes(id)
+                      ? 'border-[var(--score-low)] bg-[var(--score-low)]/8 text-[var(--score-low)]'
+                      : 'border-dashed border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--score-low)] hover:text-[var(--score-low)]'
+                  }`}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill={favorites.includes(id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </button>
+              </motion.div>
+            )}
           </div>
         </div>
 
