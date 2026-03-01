@@ -1,94 +1,13 @@
 export const neighborhoods = [
-  // ──────────────────────────────────────────────
-  // IRVINE — Family-oriented, safe, suburban
-  // ──────────────────────────────────────────────
+  // ----------------------------------------------
+  // IRVINE - Family-oriented, safe, suburban
+  // ----------------------------------------------
   {
     id: "irvine",
     name: "Irvine",
     coordinates: { lat: 33.6846, lng: -117.8265 },
     overallScore: 78,
     categories: [
-      {
-        label: "Sustainability",
-        score: 72,
-        factors: [
-          {
-            name: "Carbon Footprint",
-            score: 68,
-            confidence: 78,
-            sources: [
-              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 70, type: "measured" },
-              { name: "CoolClimate Network Calculator", weight: 0.35, value: 69, type: "measured" },
-              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 63, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Carbon Footprint: 68",
-              positive: "Better than 62% of Orange County suburbs for per-capita carbon emissions",
-              negative: "Falls behind 38% of comparable neighborhoods in carbon footprint reduction",
-            },
-          },
-          {
-            name: "Green Transit Score",
-            score: 58,
-            confidence: 76,
-            sources: [
-              { name: "OCTA Green Transit Assessment", weight: 0.4, value: 60, type: "measured" },
-              { name: "EPA Smart Location Database", weight: 0.35, value: 59, type: "measured" },
-              { name: "AI Green Commute Model", weight: 0.25, value: 53, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Transit Score: 58",
-              positive: "Better than 50% of suburban communities for eco-friendly transit options",
-              negative: "Falls behind 50% of comparable neighborhoods in green transportation access",
-            },
-          },
-          {
-            name: "Bike Infrastructure",
-            score: 74,
-            confidence: 82,
-            sources: [
-              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 76, type: "measured" },
-              { name: "City of Irvine Bike Master Plan Data", weight: 0.35, value: 75, type: "measured" },
-              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 69, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Bike Infrastructure: 74",
-              positive: "Better than 71% of Southern California suburbs for cycling infrastructure",
-              negative: "Falls behind 29% of comparable neighborhoods in bike-friendliness",
-            },
-          },
-          {
-            name: "Renewable Energy",
-            score: 70,
-            confidence: 80,
-            sources: [
-              { name: "CA Energy Commission Local Data", weight: 0.4, value: 72, type: "measured" },
-              { name: "EIA State Electricity Profiles", weight: 0.35, value: 71, type: "measured" },
-              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 65, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Renewable Energy: 70",
-              positive: "Better than 64% of Orange County communities for renewable energy adoption",
-              negative: "Falls behind 36% of comparable neighborhoods in clean energy transition",
-            },
-          },
-          {
-            name: "Green Space Coverage",
-            score: 88,
-            confidence: 90,
-            sources: [
-              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 90, type: "measured" },
-              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 89, type: "measured" },
-              { name: "AI Green Coverage Model", weight: 0.25, value: 83, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Space Coverage: 88",
-              positive: "Better than 90% of Southern California neighborhoods for green space and tree canopy",
-              negative: "Falls behind 10% of comparable neighborhoods in urban green coverage",
-            },
-          },
-        ],
-      },
       {
         label: "Livability",
         score: 81,
@@ -356,96 +275,15 @@ export const neighborhoods = [
     ],
   },
 
-  // ──────────────────────────────────────────────
-  // SANTA MONICA — Excellent livability, high growth, expensive
-  // ──────────────────────────────────────────────
+  // ----------------------------------------------
+  // SANTA MONICA - Excellent livability, high growth, expensive
+  // ----------------------------------------------
   {
     id: "santa-monica",
     name: "Santa Monica",
     coordinates: { lat: 34.0195, lng: -118.4912 },
-    overallScore: 82,
+    overallScore: 84,
     categories: [
-      {
-        label: "Sustainability",
-        score: 81,
-        factors: [
-          {
-            name: "Carbon Footprint",
-            score: 78,
-            confidence: 82,
-            sources: [
-              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 80, type: "measured" },
-              { name: "CoolClimate Network Calculator", weight: 0.35, value: 79, type: "measured" },
-              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 73, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Carbon Footprint: 78",
-              positive: "Better than 74% of coastal California cities for per-capita carbon emissions",
-              negative: "Falls behind 26% of comparable neighborhoods in carbon footprint reduction",
-            },
-          },
-          {
-            name: "Green Transit Score",
-            score: 86,
-            confidence: 88,
-            sources: [
-              { name: "LA Metro Green Transit Assessment", weight: 0.4, value: 88, type: "measured" },
-              { name: "EPA Smart Location Database", weight: 0.35, value: 87, type: "measured" },
-              { name: "AI Green Commute Model", weight: 0.25, value: 81, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Transit Score: 86",
-              positive: "Better than 88% of LA Westside communities for eco-friendly transit options",
-              negative: "Falls behind 12% of comparable neighborhoods in green transportation access",
-            },
-          },
-          {
-            name: "Bike Infrastructure",
-            score: 84,
-            confidence: 86,
-            sources: [
-              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 86, type: "measured" },
-              { name: "City of Santa Monica Bike Action Plan Data", weight: 0.35, value: 85, type: "measured" },
-              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 79, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Bike Infrastructure: 84",
-              positive: "Better than 85% of Southern California cities for cycling infrastructure and safety",
-              negative: "Falls behind 15% of comparable neighborhoods in bike-friendliness",
-            },
-          },
-          {
-            name: "Renewable Energy",
-            score: 79,
-            confidence: 84,
-            sources: [
-              { name: "CA Energy Commission Local Data", weight: 0.4, value: 81, type: "measured" },
-              { name: "EIA State Electricity Profiles", weight: 0.35, value: 80, type: "measured" },
-              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 74, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Renewable Energy: 79",
-              positive: "Better than 76% of coastal California communities for renewable energy adoption",
-              negative: "Falls behind 24% of comparable neighborhoods in clean energy transition",
-            },
-          },
-          {
-            name: "Green Space Coverage",
-            score: 77,
-            confidence: 85,
-            sources: [
-              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 79, type: "measured" },
-              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 78, type: "measured" },
-              { name: "AI Green Coverage Model", weight: 0.25, value: 72, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Space Coverage: 77",
-              positive: "Better than 73% of urban coastal neighborhoods for green space and tree canopy",
-              negative: "Falls behind 27% of comparable neighborhoods in urban green coverage",
-            },
-          },
-        ],
-      },
       {
         label: "Livability",
         score: 91,
@@ -713,96 +551,15 @@ export const neighborhoods = [
     ],
   },
 
-  // ──────────────────────────────────────────────
-  // PASADENA — Culture-rich, diverse, moderate across the board
-  // ──────────────────────────────────────────────
+  // ----------------------------------------------
+  // PASADENA - Culture-rich, diverse, moderate across the board
+  // ----------------------------------------------
   {
     id: "pasadena",
     name: "Pasadena",
     coordinates: { lat: 34.1478, lng: -118.1445 },
-    overallScore: 74,
+    overallScore: 76,
     categories: [
-      {
-        label: "Sustainability",
-        score: 68,
-        factors: [
-          {
-            name: "Carbon Footprint",
-            score: 65,
-            confidence: 79,
-            sources: [
-              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 67, type: "measured" },
-              { name: "CoolClimate Network Calculator", weight: 0.35, value: 66, type: "measured" },
-              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 60, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Carbon Footprint: 65",
-              positive: "Better than 58% of San Gabriel Valley cities for per-capita carbon emissions",
-              negative: "Falls behind 42% of comparable neighborhoods in carbon footprint reduction",
-            },
-          },
-          {
-            name: "Green Transit Score",
-            score: 72,
-            confidence: 83,
-            sources: [
-              { name: "LA Metro Green Transit Assessment", weight: 0.4, value: 74, type: "measured" },
-              { name: "EPA Smart Location Database", weight: 0.35, value: 73, type: "measured" },
-              { name: "AI Green Commute Model", weight: 0.25, value: 67, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Transit Score: 72",
-              positive: "Better than 67% of San Gabriel Valley communities for eco-friendly transit options",
-              negative: "Falls behind 33% of comparable neighborhoods in green transportation access",
-            },
-          },
-          {
-            name: "Bike Infrastructure",
-            score: 64,
-            confidence: 78,
-            sources: [
-              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 66, type: "measured" },
-              { name: "City of Pasadena Bicycle Master Plan Data", weight: 0.35, value: 65, type: "measured" },
-              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 59, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Bike Infrastructure: 64",
-              positive: "Better than 57% of LA County neighborhoods for cycling infrastructure",
-              negative: "Falls behind 43% of comparable neighborhoods in bike-friendliness",
-            },
-          },
-          {
-            name: "Renewable Energy",
-            score: 66,
-            confidence: 80,
-            sources: [
-              { name: "CA Energy Commission Local Data", weight: 0.4, value: 68, type: "measured" },
-              { name: "EIA State Electricity Profiles", weight: 0.35, value: 67, type: "measured" },
-              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 61, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Renewable Energy: 66",
-              positive: "Better than 59% of LA County communities for renewable energy adoption",
-              negative: "Falls behind 41% of comparable neighborhoods in clean energy transition",
-            },
-          },
-          {
-            name: "Green Space Coverage",
-            score: 74,
-            confidence: 85,
-            sources: [
-              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 76, type: "measured" },
-              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 75, type: "measured" },
-              { name: "AI Green Coverage Model", weight: 0.25, value: 69, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Space Coverage: 74",
-              positive: "Better than 70% of LA County neighborhoods for green space and tree canopy",
-              negative: "Falls behind 30% of comparable neighborhoods in urban green coverage",
-            },
-          },
-        ],
-      },
       {
         label: "Livability",
         score: 77,
@@ -1070,96 +827,15 @@ export const neighborhoods = [
     ],
   },
 
-  // ──────────────────────────────────────────────
-  // WEST HOLLYWOOD — Walkable, vibrant nightlife, LGBTQ+ friendly
-  // ──────────────────────────────────────────────
+  // ----------------------------------------------
+  // WEST HOLLYWOOD - Walkable, vibrant nightlife, LGBTQ+ friendly
+  // ----------------------------------------------
   {
     id: "west-hollywood",
     name: "West Hollywood",
     coordinates: { lat: 34.0900, lng: -118.3617 },
-    overallScore: 79,
+    overallScore: 80,
     categories: [
-      {
-        label: "Sustainability",
-        score: 75,
-        factors: [
-          {
-            name: "Carbon Footprint",
-            score: 74,
-            confidence: 80,
-            sources: [
-              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 76, type: "measured" },
-              { name: "CoolClimate Network Calculator", weight: 0.35, value: 75, type: "measured" },
-              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 69, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Carbon Footprint: 74",
-              positive: "Better than 69% of dense urban LA neighborhoods for per-capita carbon emissions",
-              negative: "Falls behind 31% of comparable neighborhoods in carbon footprint reduction",
-            },
-          },
-          {
-            name: "Green Transit Score",
-            score: 82,
-            confidence: 86,
-            sources: [
-              { name: "LA Metro Green Transit Assessment", weight: 0.4, value: 84, type: "measured" },
-              { name: "EPA Smart Location Database", weight: 0.35, value: 83, type: "measured" },
-              { name: "AI Green Commute Model", weight: 0.25, value: 77, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Transit Score: 82",
-              positive: "Better than 80% of LA urban neighborhoods for eco-friendly transit options",
-              negative: "Falls behind 20% of comparable neighborhoods in green transportation access",
-            },
-          },
-          {
-            name: "Bike Infrastructure",
-            score: 77,
-            confidence: 83,
-            sources: [
-              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 79, type: "measured" },
-              { name: "City of West Hollywood Active Transport Data", weight: 0.35, value: 78, type: "measured" },
-              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 72, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Bike Infrastructure: 77",
-              positive: "Better than 74% of urban LA neighborhoods for cycling infrastructure",
-              negative: "Falls behind 26% of comparable neighborhoods in bike-friendliness",
-            },
-          },
-          {
-            name: "Renewable Energy",
-            score: 72,
-            confidence: 81,
-            sources: [
-              { name: "CA Energy Commission Local Data", weight: 0.4, value: 74, type: "measured" },
-              { name: "EIA State Electricity Profiles", weight: 0.35, value: 73, type: "measured" },
-              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 67, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Renewable Energy: 72",
-              positive: "Better than 66% of LA metro communities for renewable energy adoption",
-              negative: "Falls behind 34% of comparable neighborhoods in clean energy transition",
-            },
-          },
-          {
-            name: "Green Space Coverage",
-            score: 68,
-            confidence: 80,
-            sources: [
-              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 70, type: "measured" },
-              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 69, type: "measured" },
-              { name: "AI Green Coverage Model", weight: 0.25, value: 63, type: "estimated" },
-            ],
-            frames: {
-              neutral: "Green Space Coverage: 68",
-              positive: "Better than 61% of dense urban neighborhoods for green space and tree canopy",
-              negative: "Falls behind 39% of comparable neighborhoods in urban green coverage",
-            },
-          },
-        ],
-      },
       {
         label: "Livability",
         score: 85,
@@ -1426,23 +1102,372 @@ export const neighborhoods = [
       },
     ],
   },
+
+  // ----------------------------------------------
+  // BERKELEY - Progressive, walkable, university town
+  // ----------------------------------------------
+  {
+    id: "berkeley",
+    name: "Berkeley",
+    region: "bay-area",
+    cbgFile: "bay_area_cbgs.json",
+    cbgScoresFile: "bay_area_cbg_scores.json",
+    coordinates: { lat: 37.8716, lng: -122.2727 },
+    overallScore: 82,
+    categories: [
+      {
+        label: "Sustainability",
+        score: 88,
+        factors: [
+          {
+            name: "Carbon Footprint",
+            score: 82,
+            confidence: 85,
+            sources: [
+              { name: "EPA Greenhouse Gas Reporting Program", weight: 0.4, value: 84, type: "measured" },
+              { name: "CoolClimate Network Calculator", weight: 0.35, value: 83, type: "measured" },
+              { name: "AI Per-Capita Emissions Estimate", weight: 0.25, value: 77, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Carbon Footprint: 82",
+              positive: "Better than 80% of Bay Area cities for carbon efficiency",
+              negative: "Falls behind 20% of comparable neighborhoods in carbon reduction",
+            },
+          },
+          {
+            name: "Green Transit Score",
+            score: 91,
+            confidence: 92,
+            sources: [
+              { name: "AC Transit Ridership Data", weight: 0.4, value: 93, type: "measured" },
+              { name: "EPA Smart Location Database", weight: 0.35, value: 92, type: "measured" },
+              { name: "AI Green Commute Model", weight: 0.25, value: 86, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Transit Score: 91",
+              positive: "Better than 89% of Bay Area neighborhoods for green transit access",
+              negative: "Falls behind 11% of comparable neighborhoods in green transit",
+            },
+          },
+          {
+            name: "Bike Infrastructure",
+            score: 90,
+            confidence: 88,
+            sources: [
+              { name: "PeopleForBikes City Ratings", weight: 0.4, value: 92, type: "measured" },
+              { name: "City of Berkeley Bike Plan Data", weight: 0.35, value: 91, type: "measured" },
+              { name: "AI Cycling Safety & Access Model", weight: 0.25, value: 85, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Bike Infrastructure: 90",
+              positive: "Better than 88% of Bay Area neighborhoods for cycling infrastructure",
+              negative: "Falls behind 12% of comparable neighborhoods in bike access",
+            },
+          },
+          {
+            name: "Renewable Energy",
+            score: 85,
+            confidence: 83,
+            sources: [
+              { name: "CA Energy Commission Local Data", weight: 0.4, value: 87, type: "measured" },
+              { name: "EIA State Electricity Profiles", weight: 0.35, value: 86, type: "measured" },
+              { name: "AI Solar Adoption Estimate", weight: 0.25, value: 80, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Renewable Energy: 85",
+              positive: "Better than 83% of Bay Area neighborhoods for renewable adoption",
+              negative: "Falls behind 17% of comparable neighborhoods in renewable energy",
+            },
+          },
+          {
+            name: "Green Space Coverage",
+            score: 80,
+            confidence: 86,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 82, type: "measured" },
+              { name: "USDA Urban Tree Canopy Assessment", weight: 0.35, value: 81, type: "measured" },
+              { name: "AI Green Coverage Model", weight: 0.25, value: 75, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Green Space Coverage: 80",
+              positive: "Better than 78% of Bay Area neighborhoods for green space",
+              negative: "Falls behind 22% of comparable neighborhoods in green coverage",
+            },
+          },
+        ],
+      },
+      {
+        label: "Livability",
+        score: 85,
+        factors: [
+          {
+            name: "Walkability",
+            score: 89,
+            confidence: 91,
+            sources: [
+              { name: "Walk Score Index", weight: 0.45, value: 91, type: "measured" },
+              { name: "USDOT Pedestrian Infrastructure Survey", weight: 0.3, value: 90, type: "measured" },
+              { name: "AI Pedestrian Activity Model", weight: 0.25, value: 84, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Walkability: 89",
+              positive: "Better than 87% of Bay Area neighborhoods for walkability",
+              negative: "Falls behind 13% of comparable neighborhoods in pedestrian access",
+            },
+          },
+          {
+            name: "Transit Access",
+            score: 88,
+            confidence: 90,
+            sources: [
+              { name: "AC Transit & BART Ridership Data", weight: 0.4, value: 90, type: "measured" },
+              { name: "AllTransit Performance Score", weight: 0.35, value: 89, type: "measured" },
+              { name: "AI Transit Connectivity Estimate", weight: 0.25, value: 83, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Transit Access: 88",
+              positive: "Better than 86% of Bay Area neighborhoods for public transit",
+              negative: "Falls behind 14% of comparable neighborhoods in transit connectivity",
+            },
+          },
+          {
+            name: "Parks & Recreation",
+            score: 83,
+            confidence: 87,
+            sources: [
+              { name: "Trust for Public Land ParkScore", weight: 0.4, value: 85, type: "measured" },
+              { name: "City of Berkeley Parks Inventory", weight: 0.35, value: 84, type: "measured" },
+              { name: "AI Green Space Coverage Model", weight: 0.25, value: 78, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Parks & Recreation: 83",
+              positive: "Better than 81% of Bay Area neighborhoods for park access",
+              negative: "Falls behind 19% of comparable neighborhoods in recreational amenities",
+            },
+          },
+          {
+            name: "Grocery & Essentials Access",
+            score: 87,
+            confidence: 89,
+            sources: [
+              { name: "USDA Food Access Research Atlas", weight: 0.4, value: 89, type: "measured" },
+              { name: "Yelp Business Density Index", weight: 0.35, value: 88, type: "measured" },
+              { name: "AI Essential Services Proximity Model", weight: 0.25, value: 82, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Grocery & Essentials Access: 87",
+              positive: "Better than 85% of Bay Area neighborhoods for essential services",
+              negative: "Falls behind 15% of comparable neighborhoods in grocery access",
+            },
+          },
+        ],
+      },
+      {
+        label: "Safety",
+        score: 68,
+        factors: [
+          {
+            name: "Violent Crime Rate",
+            score: 61,
+            confidence: 88,
+            sources: [
+              { name: "FBI UCR Crime Statistics", weight: 0.45, value: 63, type: "measured" },
+              { name: "Berkeley PD Annual Crime Report", weight: 0.35, value: 62, type: "measured" },
+              { name: "AI Crime Trend Projection", weight: 0.2, value: 55, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Violent Crime Rate: 61",
+              positive: "Better than 54% of comparable Bay Area cities for violent crime safety",
+              negative: "Falls behind 46% of comparable neighborhoods in violent crime prevention",
+            },
+          },
+          {
+            name: "Property Crime Rate",
+            score: 58,
+            confidence: 86,
+            sources: [
+              { name: "FBI UCR Property Crime Data", weight: 0.4, value: 60, type: "measured" },
+              { name: "Berkeley PD Property Crime Reports", weight: 0.35, value: 59, type: "measured" },
+              { name: "AI Property Crime Risk Model", weight: 0.25, value: 53, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Crime Rate: 58",
+              positive: "Better than 51% of Bay Area neighborhoods for property safety",
+              negative: "Falls behind 49% of comparable neighborhoods in property crime prevention",
+            },
+          },
+          {
+            name: "Traffic Safety",
+            score: 72,
+            confidence: 84,
+            sources: [
+              { name: "NHTSA Fatality Analysis Reporting System", weight: 0.4, value: 74, type: "measured" },
+              { name: "CA Office of Traffic Safety Rankings", weight: 0.35, value: 73, type: "measured" },
+              { name: "AI Traffic Incident Density Model", weight: 0.25, value: 67, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Traffic Safety: 72",
+              positive: "Better than 70% of Bay Area neighborhoods for traffic safety",
+              negative: "Falls behind 30% of comparable neighborhoods in traffic incident prevention",
+            },
+          },
+          {
+            name: "Emergency Response Time",
+            score: 79,
+            confidence: 85,
+            sources: [
+              { name: "NFPA Response Time Benchmarks", weight: 0.4, value: 81, type: "measured" },
+              { name: "Berkeley Fire Dept Dispatch Records", weight: 0.35, value: 80, type: "measured" },
+              { name: "AI Emergency Coverage Gap Estimate", weight: 0.25, value: 74, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Emergency Response Time: 79",
+              positive: "Better than 77% of Bay Area neighborhoods for emergency response",
+              negative: "Falls behind 23% of comparable neighborhoods in emergency coverage",
+            },
+          },
+        ],
+      },
+      {
+        label: "Community",
+        score: 88,
+        factors: [
+          {
+            name: "Family Friendliness",
+            score: 78,
+            confidence: 82,
+            sources: [
+              { name: "GreatSchools District Rating", weight: 0.4, value: 80, type: "measured" },
+              { name: "Census ACS Family Household Data", weight: 0.35, value: 79, type: "measured" },
+              { name: "AI Family Suitability Index", weight: 0.25, value: 73, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Family Friendliness: 78",
+              positive: "Better than 76% of Bay Area neighborhoods for family suitability",
+              negative: "Falls behind 24% of comparable neighborhoods in family amenities",
+            },
+          },
+          {
+            name: "Cultural Amenities",
+            score: 94,
+            confidence: 91,
+            sources: [
+              { name: "NEA Arts & Culture Survey", weight: 0.4, value: 96, type: "measured" },
+              { name: "Yelp Cultural Venue Density", weight: 0.35, value: 95, type: "measured" },
+              { name: "AI Cultural Vibrancy Estimate", weight: 0.25, value: 89, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Cultural Amenities: 94",
+              positive: "Better than 92% of Bay Area neighborhoods for arts and culture",
+              negative: "Falls behind 8% of comparable neighborhoods in cultural vibrancy",
+            },
+          },
+          {
+            name: "Diversity Index",
+            score: 86,
+            confidence: 90,
+            sources: [
+              { name: "Census ACS Diversity & Inclusion Index", weight: 0.45, value: 88, type: "measured" },
+              { name: "USA Today Diversity Index", weight: 0.3, value: 87, type: "measured" },
+              { name: "AI Demographic Diversity Model", weight: 0.25, value: 81, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Diversity Index: 86",
+              positive: "Better than 84% of Bay Area neighborhoods for demographic diversity",
+              negative: "Falls behind 16% of comparable neighborhoods in diversity",
+            },
+          },
+          {
+            name: "Nightlife & Entertainment",
+            score: 82,
+            confidence: 85,
+            sources: [
+              { name: "Yelp Nightlife Venue Index", weight: 0.4, value: 84, type: "measured" },
+              { name: "Google Maps Late-Night POI Density", weight: 0.35, value: 83, type: "measured" },
+              { name: "AI Entertainment Activity Estimate", weight: 0.25, value: 77, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Nightlife & Entertainment: 82",
+              positive: "Better than 80% of Bay Area neighborhoods for nightlife",
+              negative: "Falls behind 20% of comparable neighborhoods in entertainment",
+            },
+          },
+        ],
+      },
+      {
+        label: "Growth",
+        score: 79,
+        factors: [
+          {
+            name: "Job Market Strength",
+            score: 84,
+            confidence: 88,
+            sources: [
+              { name: "BLS Local Area Unemployment Statistics", weight: 0.4, value: 86, type: "measured" },
+              { name: "Census LEHD Employment Data", weight: 0.35, value: 85, type: "measured" },
+              { name: "AI Job Growth Trajectory Model", weight: 0.25, value: 79, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Job Market Strength: 84",
+              positive: "Better than 82% of Bay Area neighborhoods for employment opportunity",
+              negative: "Falls behind 18% of comparable neighborhoods in job market vitality",
+            },
+          },
+          {
+            name: "Property Value Trend",
+            score: 80,
+            confidence: 87,
+            sources: [
+              { name: "Zillow Home Value Index", weight: 0.4, value: 82, type: "measured" },
+              { name: "CoreLogic Home Price Index", weight: 0.35, value: 81, type: "measured" },
+              { name: "AI Property Appreciation Forecast", weight: 0.25, value: 75, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Property Value Trend: 80",
+              positive: "Better than 78% of Bay Area markets for property appreciation",
+              negative: "Falls behind 22% of comparable neighborhoods in value growth",
+            },
+          },
+          {
+            name: "New Development Pipeline",
+            score: 72,
+            confidence: 80,
+            sources: [
+              { name: "City of Berkeley Permit Records", weight: 0.4, value: 74, type: "measured" },
+              { name: "CoStar Commercial Development Tracker", weight: 0.35, value: 73, type: "measured" },
+              { name: "AI Development Momentum Estimate", weight: 0.25, value: 67, type: "estimated" },
+            ],
+            frames: {
+              neutral: "New Development Pipeline: 72",
+              positive: "Better than 70% of Bay Area cities for new construction activity",
+              negative: "Falls behind 30% of comparable neighborhoods in development momentum",
+            },
+          },
+          {
+            name: "Rent Affordability",
+            score: 38,
+            confidence: 91,
+            sources: [
+              { name: "Census ACS Median Gross Rent", weight: 0.4, value: 40, type: "measured" },
+              { name: "Apartment List Rent Estimates", weight: 0.35, value: 39, type: "measured" },
+              { name: "AI Rent Burden Projection Model", weight: 0.25, value: 33, type: "estimated" },
+            ],
+            frames: {
+              neutral: "Rent Affordability: 38",
+              positive: "Better than 31% of Bay Area neighborhoods for rental affordability",
+              negative: "Falls behind 69% of comparable neighborhoods in rental cost accessibility",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getNeighborhoodById(id) {
-  return neighborhoods.find((n) => n.id === id)
-    || _getGenerated()[id] || null
+  return neighborhoods.find((n) => n.id === id);
 }
 
 export function getAllNeighborhoods() {
-  return [...neighborhoods, ...Object.values(_getGenerated())]
+  return neighborhoods;
 }
-
-// Inline accessor — avoids top-level import of useStore to keep this file dependency-free.
-// useStore is guaranteed loaded before any call to these functions (React has already mounted).
-function _getGenerated() {
-  try {
-    const raw = localStorage.getItem('locus_generated_neighborhoods')
-    return raw ? JSON.parse(raw) : {}
-  } catch { return {} }
-}
-

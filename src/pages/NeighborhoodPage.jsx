@@ -378,6 +378,7 @@ export default function NeighborhoodPage() {
               coordinates={neighborhood.coordinates}
               overallScore={neighborhood.overallScore}
               listings={listings}
+              neighborhoodId={id}
             />
             {listingsLoading && <ListingSkeleton />}
             {listingsError && !listingsLoading && (

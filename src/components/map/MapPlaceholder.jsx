@@ -1,7 +1,19 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
 import CBGS_GEOJSON from '../../data/irvine_cbgs.json'
 import CBG_SCORES from '../../data/cbg_scores.json'
+
+const BAY_AREA_IDS = new Set(['berkeley'])
+const _geoCache = {}
+const _scoreCache = {}
+async function loadBayArea() {
+  if (!_geoCache.bay) {
+    const [g, s] = await Promise.all([fetch('/bay_area_cbgs.json'), fetch('/bay_area_cbg_scores.json')])
+    _geoCache.bay = await g.json()
+    _scoreCache.bay = await s.json()
+  }
+  return { geo: _geoCache.bay, scores: _scoreCache.bay }
+}
 
 function scoreToColor(score) {
   if (score == null) return '#94a3b8'
@@ -12,8 +24,8 @@ function scoreToColor(score) {
   return '#ef4444'
 }
 
-function getScores(geoid) {
-  const row = CBG_SCORES[geoid]
+function getScores(geoid, CBG_SCORES) {
+  const row = (CBG_SCORES||{})[geoid]
   const overall = row?.overall ?? null
   const livability = row?.livability ?? row?.transit ?? null
   const community = row?.community ?? row?.green_space ?? null
@@ -27,10 +39,10 @@ function scoreColor(score) {
   return score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444'
 }
 
-function MiniPanel({ cbg, onClose }) {
+function MiniPanel({ cbg, cbgScores, onClose }) {
   if (!cbg) return null
 
-  const scores = getScores(cbg.geoid)
+  const scores = getScores(cbg.geoid, cbgScores)
 
   return (
     <div
@@ -119,14 +131,14 @@ function getFeatureGeoid(feature) {
   return String(feature.getProperty('GEOID') ?? '')
 }
 
-function getFeatureCity(feature) {
+function getFeatureCity(feature, CBG_SCORES) {
   const geoid = getFeatureGeoid(feature)
-  return CBG_SCORES[geoid]?.city || feature.getProperty('city') || 'Orange County'
+  return (CBG_SCORES||{})[geoid]?.city || feature.getProperty('city') || 'Unknown'
 }
 
-function getFeatureStyle(feature) {
+function getFeatureStyle(feature, CBG_SCORES) {
   const geoid = getFeatureGeoid(feature)
-  const score = geoid ? CBG_SCORES[geoid]?.overall ?? null : null
+  const score = geoid ? (CBG_SCORES||{})[geoid]?.overall ?? null : null
   const fill = scoreToColor(score)
   const isSelected = Boolean(feature.getProperty('__selected'))
   const isHover = Boolean(feature.getProperty('__hover'))
@@ -166,13 +178,27 @@ function getFeatureStyle(feature) {
   }
 }
 
-export default function MapPlaceholder({ name, coordinates }) {
+export default function MapPlaceholder({ name, coordinates, neighborhoodId }) {
+  const isBayArea = BAY_AREA_IDS.has(neighborhoodId)
   const [selectedCbg, setSelectedCbg] = useState(null)
+  const [cbgGeo, setCbgGeo]       = useState(isBayArea ? null : CBGS_GEOJSON)
+  const [cbgScores, setCbgScores] = useState(isBayArea ? {} : CBG_SCORES)
+  const [mapReady, setMapReady]   = useState(false)
 
+  const initialCenter = useRef({ lat: coordinates.lat, lng: coordinates.lng })
   const mapRef = useRef(null)
   const selectedFeatureRef = useRef(null)
   const hoveredFeatureRef = useRef(null)
   const listenersRef = useRef([])
+
+  useEffect(() => {
+    if (isBayArea) {
+      loadBayArea().then(({ geo, scores }) => { setCbgGeo(geo); setCbgScores(scores) })
+    } else {
+      setCbgGeo(CBGS_GEOJSON)
+      setCbgScores(CBG_SCORES)
+    }
+  }, [isBayArea])
 
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
@@ -204,53 +230,8 @@ export default function MapPlaceholder({ name, coordinates }) {
 
   const handleMapLoad = useCallback((map) => {
     mapRef.current = map
-    removeListeners()
-
-    map.data.forEach((feature) => map.data.remove(feature))
-    map.data.addGeoJson(CBGS_GEOJSON)
-    map.data.setStyle((feature) => getFeatureStyle(feature))
-
-    const overListener = map.data.addListener('mouseover', (event) => {
-      clearHover()
-      if (event.feature !== selectedFeatureRef.current) {
-        event.feature.setProperty('__hover', true)
-        hoveredFeatureRef.current = event.feature
-      }
-    })
-
-    const outListener = map.data.addListener('mouseout', (event) => {
-      if (event.feature !== selectedFeatureRef.current) {
-        event.feature.setProperty('__hover', false)
-      }
-      if (hoveredFeatureRef.current === event.feature) {
-        hoveredFeatureRef.current = null
-      }
-    })
-
-    const clickListener = map.data.addListener('click', (event) => {
-      clearHover()
-
-      if (selectedFeatureRef.current && selectedFeatureRef.current !== event.feature) {
-        resetFeatureState(selectedFeatureRef.current)
-      }
-
-      event.feature.setProperty('__selected', true)
-      event.feature.setProperty('__hover', false)
-      selectedFeatureRef.current = event.feature
-
-      setSelectedCbg({
-        geoid: getFeatureGeoid(event.feature),
-        city: getFeatureCity(event.feature),
-      })
-    })
-
-    const mapClickListener = map.addListener('click', () => {
-      clearHover()
-      clearSelection()
-    })
-
-    listenersRef.current = [overListener, outListener, clickListener, mapClickListener]
-  }, [clearHover, clearSelection, removeListeners, resetFeatureState])
+    setMapReady(true)
+  }, [])
 
   const handleMapUnmount = useCallback(() => {
     removeListeners()
@@ -258,6 +239,64 @@ export default function MapPlaceholder({ name, coordinates }) {
     hoveredFeatureRef.current = null
     mapRef.current = null
   }, [removeListeners])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !cbgGeo) return
+
+    map.data.forEach((f) => map.data.remove(f))
+    listenersRef.current.forEach((l) => l.remove())
+    listenersRef.current = []
+
+    map.data.addGeoJson(cbgGeo)
+    map.data.setStyle((f) => getFeatureStyle(f, cbgScores))
+
+    const overListener = map.data.addListener('mouseover', (event) => {
+      if (hoveredFeatureRef.current && hoveredFeatureRef.current !== selectedFeatureRef.current) {
+        hoveredFeatureRef.current.setProperty('__hover', false)
+      }
+      if (event.feature !== selectedFeatureRef.current) {
+        event.feature.setProperty('__hover', true)
+        hoveredFeatureRef.current = event.feature
+      }
+    })
+    const outListener = map.data.addListener('mouseout', (event) => {
+      if (event.feature !== selectedFeatureRef.current) {
+        event.feature.setProperty('__hover', false)
+      }
+      if (hoveredFeatureRef.current === event.feature) hoveredFeatureRef.current = null
+    })
+    const clickListener = map.data.addListener('click', (event) => {
+      if (hoveredFeatureRef.current && hoveredFeatureRef.current !== selectedFeatureRef.current) {
+        hoveredFeatureRef.current.setProperty('__hover', false)
+      }
+      hoveredFeatureRef.current = null
+      if (selectedFeatureRef.current && selectedFeatureRef.current !== event.feature) {
+        selectedFeatureRef.current.setProperty('__hover', false)
+        selectedFeatureRef.current.setProperty('__selected', false)
+      }
+      event.feature.setProperty('__selected', true)
+      event.feature.setProperty('__hover', false)
+      selectedFeatureRef.current = event.feature
+      setSelectedCbg({
+        geoid: getFeatureGeoid(event.feature),
+        city: getFeatureCity(event.feature, cbgScores),
+      })
+    })
+    const mapClickListener = map.addListener('click', () => {
+      if (hoveredFeatureRef.current && hoveredFeatureRef.current !== selectedFeatureRef.current) {
+        hoveredFeatureRef.current.setProperty('__hover', false)
+      }
+      hoveredFeatureRef.current = null
+      if (selectedFeatureRef.current) {
+        selectedFeatureRef.current.setProperty('__hover', false)
+        selectedFeatureRef.current.setProperty('__selected', false)
+        selectedFeatureRef.current = null
+      }
+      setSelectedCbg(null)
+    })
+    listenersRef.current = [overListener, outListener, clickListener, mapClickListener]
+  }, [cbgGeo, cbgScores, mapReady])
 
   const handleClosePanel = () => {
     clearHover()
@@ -277,7 +316,7 @@ export default function MapPlaceholder({ name, coordinates }) {
       <LoadScript googleMapsApiKey={googleMapsApiKey}>
         <GoogleMap
           mapContainerStyle={{ width: '100%', height: '100%' }}
-          center={{ lat: coordinates.lat, lng: coordinates.lng }}
+          center={initialCenter.current}
           zoom={13}
           options={{
             mapTypeControl: false,
@@ -287,6 +326,7 @@ export default function MapPlaceholder({ name, coordinates }) {
           }}
           onLoad={handleMapLoad}
           onUnmount={handleMapUnmount}
+          key={neighborhoodId}
         >
           <Marker
             position={{ lat: coordinates.lat, lng: coordinates.lng }}
@@ -359,7 +399,7 @@ export default function MapPlaceholder({ name, coordinates }) {
         {name}
       </div>
 
-      <MiniPanel cbg={selectedCbg} onClose={handleClosePanel} />
+      <MiniPanel cbg={selectedCbg} cbgScores={cbgScores} onClose={handleClosePanel} />
     </div>
   )
 }
