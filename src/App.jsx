@@ -8,6 +8,7 @@ import ComparePage from './pages/ComparePage'
 import ChallengePanel from './components/challenge/ChallengePanel'
 import ProfilePanel from './components/profile/ProfilePanel'
 import InsightsPage from './pages/InsightsPage'
+import DeveloperDashboard from './pages/DeveloperDashboard'
 import useStore from './store/useStore'
 
 // ── Error Boundary ──
@@ -84,6 +85,7 @@ function AnimatedRoutes() {
           <Route path="/neighborhood/:id" element={<NeighborhoodPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/developer" element={<DeveloperDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
