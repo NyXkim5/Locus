@@ -7,6 +7,7 @@ import ScoreCircle from '../components/shared/ScoreCircle'
 import ScoreBar from '../components/shared/ScoreBar'
 import { getScoreColor } from '../utils/scoreColor'
 import RadarChart from '../components/scores/RadarChart'
+import BiographyComparison from '../components/comparison/BiographyComparison'
 import { useState } from 'react'
 
 function ComparisonColumn({ neighborhood }) {
@@ -120,6 +121,11 @@ export default function ComparePage() {
           </p>
           <FramingToggle />
         </div>
+
+        {/* Biography Comparison */}
+        {comparedNeighborhoods.length === 2 && (
+          <BiographyComparison neighborhoods={comparedNeighborhoods} />
+        )}
 
         {/* Empty state */}
         {comparedNeighborhoods.length === 0 && (

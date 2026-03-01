@@ -6,6 +6,7 @@ export const neighborhoods = [
     id: "irvine",
     name: "Irvine",
     coordinates: { lat: 33.6846, lng: -117.8265 },
+    biography: "Irvine is a planned, master-designed community in Orange County known for its family-friendly atmosphere and exceptional safety. With highly-rated schools, pristine parks, and a commitment to sustainable urban planning, Irvine offers a secure suburban environment perfect for families. The city's thoughtful infrastructure supports both recreational and professional growth.",
     overallScore: 78,
     categories: [
       {
@@ -363,6 +364,7 @@ export const neighborhoods = [
     id: "santa-monica",
     name: "Santa Monica",
     coordinates: { lat: 34.0195, lng: -118.4912 },
+    biography: "Santa Monica is a vibrant coastal community blending stunning beaches with an innovative tech and entertainment scene. Known for its progressive culture, excellent walkability, and world-class sustainability initiatives, Santa Monica attracts professionals and artists seeking a dynamic lifestyle. The city's commitment to environmental leadership and cultural amenities makes it a unique destination.",
     overallScore: 82,
     categories: [
       {
@@ -720,6 +722,7 @@ export const neighborhoods = [
     id: "pasadena",
     name: "Pasadena",
     coordinates: { lat: 34.1478, lng: -118.1445 },
+    biography: "Pasadena is an elegant city in the San Gabriel Valley featuring a rich cultural heritage, prestigious institutions, and tree-lined neighborhoods. Home to world-renowned attractions like the Huntington Library and California Institute of Technology, Pasadena combines intellectual vitality with refined living. The city's historic architecture and established neighborhoods appeal to culture enthusiasts and families alike.",
     overallScore: 74,
     categories: [
       {
@@ -1077,6 +1080,7 @@ export const neighborhoods = [
     id: "west-hollywood",
     name: "West Hollywood",
     coordinates: { lat: 34.0900, lng: -118.3617 },
+    biography: "West Hollywood is a trendsetting urban neighborhood at the heart of Los Angeles culture, celebrated for its vibrant nightlife, cutting-edge fashion, and diverse communities. This compact, walkable area pulses with creativity and cosmopolitan energy, attracting young professionals and artists from around the world. The area's concentration of museums, restaurants, and entertainment venues makes it an urban cultural hub.",
     overallScore: 79,
     categories: [
       {
