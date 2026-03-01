@@ -8,7 +8,40 @@ export default function CommuteEstimator({ origin, mapRef }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [open, setOpen] = useState(false)
+  const [modeOpen, setModeOpen] = useState(false)
   const rendererRef = useRef(null)
+
+  const modeOptions = [
+    {
+      value: 'driving',
+      label: 'Driving',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 11l1.5-4.5A2 2 0 0 1 6.4 5h11.2a2 2 0 0 1 1.9 1.5L21 11v6a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-6z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </svg>
+      ),
+    },
+    {
+      value: 'transit',
+      label: 'Transit',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6h16v10H4z" stroke="currentColor" strokeWidth="1.2" fill="none" />
+          <path d="M6 16v2M18 16v2M4 10h16M7 7v2M17 7v2" stroke="currentColor" strokeWidth="1.2" />
+        </svg>
+      ),
+    },
+    {
+      value: 'walking',
+      label: 'Walking',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
+          <path d="M12 5v4M10 9l-3 6M14 9l3 6M10 15v4M14 15v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+  ]
 
   const handleEstimate = async () => {
     setLoading(true)
@@ -123,11 +156,79 @@ export default function CommuteEstimator({ origin, mapRef }) {
           />
 
           <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <select value={mode} onChange={(e) => setMode(e.target.value)} style={{ flex: 1, padding: '8px', borderRadius: 6 }}>
-              <option value="driving">Driving</option>
-              <option value="transit">Transit</option>
-              <option value="walking">Walking</option>
-            </select>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <button
+                onClick={() => setModeOpen((v) => !v)}
+                style={{
+                  width: '100%',
+                  padding: '8px 10px',
+                  borderRadius: 6,
+                  border: '1px solid var(--border, #e5e7eb)',
+                  background: 'var(--bg-base, white)',
+                  fontSize: 13,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary, #111)',
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16 }}>
+                    {modeOptions.find((o) => o.value === mode)?.icon}
+                  </span>
+                  {modeOptions.find((o) => o.value === mode)?.label}
+                </span>
+                <span style={{ fontSize: 10 }}>▼</span>
+              </button>
+
+              {modeOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    marginTop: 4,
+                    background: 'var(--bg-base, white)',
+                    border: '1px solid var(--border, #e5e7eb)',
+                    borderRadius: 6,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    zIndex: 2000,
+                  }}
+                >
+                  {modeOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        setMode(option.value)
+                        setModeOpen(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: 'none',
+                        background: mode === option.value ? '#f3f4f6' : 'transparent',
+                        borderBottom: option === modeOptions[modeOptions.length - 1] ? 'none' : '1px solid var(--border, #f3f4f6)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        fontSize: 13,
+                        color: 'var(--text-primary, #111)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        borderRadius: option === modeOptions[0] ? '6px 6px 0 0' : option === modeOptions[modeOptions.length - 1] ? '0 0 6px 6px' : 0,
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary, #111)' }}>
+                        {option.icon}
+                      </span>
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <button
               onClick={handleEstimate}
