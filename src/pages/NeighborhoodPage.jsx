@@ -254,7 +254,7 @@ export default function NeighborhoodPage() {
     <div className="min-h-screen">
       <TopBar title={neighborhood.name} showBack />
 
-      <div className="max-w-6xl mx-auto px-6 pt-8 pb-32">
+      <div className="max-w-[92rem] mx-auto px-6 pt-8 pb-32">
         {/* AI-Generated badge */}
         {neighborhood.isGenerated && (
           <motion.div
@@ -277,7 +277,7 @@ export default function NeighborhoodPage() {
           <FramingToggle />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] lg:grid-cols-[1.2fr_1fr] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[3fr_1fr] lg:grid-cols-[3fr_1fr] gap-6">
           {/* Left: Map */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}

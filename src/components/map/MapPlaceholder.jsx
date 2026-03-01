@@ -3,6 +3,7 @@ import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-goo
 import { motion, AnimatePresence } from 'framer-motion'
 import { getScoreColor } from '../../utils/scoreColor'
 import useStore from '../../store/useStore'
+import CBGS_GEOJSON from '../../data/irvine_cbgs.json'
 
 const lightStyle = [
   { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
@@ -44,10 +45,10 @@ const LISTING_MARKER_ICON_URL = (() => {
 export default function MapPlaceholder({ name, coordinates, overallScore, listings = [] }) {
   const [showPopup, setShowPopup] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const [activeListing, setActiveListing] = useState(null)
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const infoRef = useRef(null)
+  const cbgLayerRef = useRef(null)
   const theme = useStore((s) => s.theme)
 
   const { isLoaded } = useJsApiLoader({
@@ -83,6 +84,65 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
       })
     }
   }, [isDark])
+
+  // Census block-group overlay with hover highlight
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !window.google) return
+
+    if (cbgLayerRef.current) {
+      cbgLayerRef.current.setMap(null)
+      cbgLayerRef.current = null
+    }
+
+    const layer = new window.google.maps.Data({ map })
+    cbgLayerRef.current = layer
+
+    const cityKey = name.toLowerCase().trim()
+    const allFeatures = CBGS_GEOJSON.features || []
+    const cityFeatures = allFeatures.filter((f) => {
+      const city = String(f?.properties?.city || '').toLowerCase().trim()
+      return city === cityKey
+    })
+
+    const featuresToRender = cityFeatures.length ? cityFeatures : allFeatures
+
+    if (featuresToRender.length) {
+      layer.addGeoJson({
+        type: 'FeatureCollection',
+        features: featuresToRender,
+      })
+    }
+
+    const baseStyle = isDark
+      ? { fillColor: '#8B8EFF', fillOpacity: 0.08, strokeColor: '#8B8EFF', strokeOpacity: 0.45, strokeWeight: 1 }
+      : { fillColor: '#6366F1', fillOpacity: 0.06, strokeColor: '#6366F1', strokeOpacity: 0.45, strokeWeight: 1 }
+    const hoverStyle = isDark
+      ? { fillColor: '#A5A7FF', fillOpacity: 0.2, strokeColor: '#A5A7FF', strokeOpacity: 0.9, strokeWeight: 1.6 }
+      : { fillColor: '#4F46E5', fillOpacity: 0.2, strokeColor: '#4F46E5', strokeOpacity: 0.9, strokeWeight: 1.6 }
+
+    layer.setStyle(baseStyle)
+
+    let hoveredFeature = null
+    const mouseOver = layer.addListener('mouseover', (e) => {
+      if (hoveredFeature && hoveredFeature !== e.feature) {
+        layer.revertStyle(hoveredFeature)
+      }
+      hoveredFeature = e.feature
+      layer.overrideStyle(e.feature, hoverStyle)
+    })
+    const mouseOut = layer.addListener('mouseout', (e) => {
+      layer.revertStyle(e.feature)
+      if (hoveredFeature === e.feature) hoveredFeature = null
+    })
+
+    return () => {
+      window.google.maps.event.removeListener(mouseOver)
+      window.google.maps.event.removeListener(mouseOut)
+      layer.setMap(null)
+      cbgLayerRef.current = null
+    }
+  }, [name, isDark])
 
   // Create/update listing markers imperatively
   useEffect(() => {
@@ -157,7 +217,6 @@ export default function MapPlaceholder({ name, coordinates, overallScore, listin
 
   const dismissPopups = () => {
     setShowPopup(false)
-    setActiveListing(null)
     if (infoRef.current) { infoRef.current.close(); infoRef.current = null }
   }
 
