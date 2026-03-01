@@ -13,7 +13,7 @@ export default function FramingToggle() {
 
   return (
     <div className="flex items-center gap-2" role="radiogroup" aria-label="Data framing mode">
-      <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]">
+      <span className="text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]">
         Framing
       </span>
       <div className="flex bg-[var(--bg-surface)] rounded-md border border-[var(--border)] p-0.5">

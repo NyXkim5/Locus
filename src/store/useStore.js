@@ -58,6 +58,78 @@ const useStore = create((set) => ({
     return { favorites: next }
   }),
 
+  // ── Priorities ──
+  priorities: (() => {
+    try {
+      const raw = localStorage.getItem('locus_priorities')
+      return raw ? JSON.parse(raw) : []
+    } catch { return [] }
+  })(),
+  togglePriority: (id) => set((state) => {
+    const next = state.priorities.includes(id)
+      ? state.priorities.filter((p) => p !== id)
+      : [...state.priorities, id]
+    try { localStorage.setItem('locus_priorities', JSON.stringify(next)) } catch {}
+    return { priorities: next }
+  }),
+
+  // ── Interests (for local recommendations) ──
+  interests: (() => {
+    try {
+      const raw = localStorage.getItem('locus_interests')
+      return raw ? JSON.parse(raw) : []
+    } catch { return [] }
+  })(),
+  addInterest: (interest) => set((state) => {
+    const normalized = interest.trim().toLowerCase()
+    if (!normalized || state.interests.includes(normalized) || state.interests.length >= 10) return state
+    const next = [...state.interests, normalized]
+    try { localStorage.setItem('locus_interests', JSON.stringify(next)) } catch {}
+    return { interests: next }
+  }),
+  removeInterest: (interest) => set((state) => {
+    const next = state.interests.filter((i) => i !== interest)
+    try { localStorage.setItem('locus_interests', JSON.stringify(next)) } catch {}
+    return { interests: next }
+  }),
+
+  // ── Viewed Neighborhoods (passive tracking) ──
+  viewedNeighborhoods: (() => {
+    try {
+      const raw = localStorage.getItem('locus_viewed')
+      return raw ? JSON.parse(raw) : []
+    } catch { return [] }
+  })(),
+  trackView: (id, name) => set((state) => {
+    const exists = state.viewedNeighborhoods.find(v => v.id === id)
+    let next
+    if (exists) {
+      next = state.viewedNeighborhoods.map(v =>
+        v.id === id ? { ...v, count: v.count + 1, lastViewed: Date.now() } : v
+      )
+    } else {
+      next = [...state.viewedNeighborhoods, { id, name, count: 1, lastViewed: Date.now() }]
+    }
+    try { localStorage.setItem('locus_viewed', JSON.stringify(next)) } catch {}
+    return { viewedNeighborhoods: next }
+  }),
+
+  // ── Budget Range (from mortgage calculator) ──
+  budgetRange: (() => {
+    try {
+      const raw = localStorage.getItem('locus_budget')
+      return raw ? JSON.parse(raw) : null
+    } catch { return null }
+  })(),
+  setBudgetRange: (range) => set(() => {
+    try { localStorage.setItem('locus_budget', JSON.stringify(range)) } catch {}
+    return { budgetRange: range }
+  }),
+
+  // ── Profile Panel ──
+  profileOpen: false,
+  toggleProfile: () => set((s) => ({ profileOpen: !s.profileOpen })),
+
   // ── Framing ──
   framingMode: 'neutral',
   setFramingMode: (mode) => set({ framingMode: mode }),

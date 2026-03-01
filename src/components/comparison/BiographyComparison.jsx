@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 
 export default function BiographyComparison({ neighborhoods }) {
-  if (neighborhoods.length !== 2) return null
+  if (!Array.isArray(neighborhoods) || neighborhoods.length !== 2) return null
+  if (!neighborhoods[0].biography && !neighborhoods[1].biography) return null
 
   return (
     <motion.div
@@ -31,7 +32,7 @@ export default function BiographyComparison({ neighborhoods }) {
 
             {/* Biography text */}
             <p className="text-[13px] leading-relaxed text-[var(--text-secondary)]">
-              {neighborhood.biography}
+              {neighborhood.biography || 'AI-generated neighborhood — no biography available.'}
             </p>
           </motion.div>
         ))}

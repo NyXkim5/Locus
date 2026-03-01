@@ -154,7 +154,7 @@ export default function RadarChart({ neighborhoods }) {
               dy={anchor.dy}
               textAnchor={anchor.textAnchor}
               fill="var(--text-muted)"
-              fontSize="11"
+              fontSize="12"
             >
               {name}
             </text>
@@ -169,7 +169,7 @@ export default function RadarChart({ neighborhoods }) {
             className="inline-block w-2.5 h-2.5 rounded-full"
             style={{ background: 'var(--accent)' }}
           />
-          <span className="text-[11px] text-[var(--text-muted)]">
+          <span className="text-[12px] text-[var(--text-muted)]">
             {neighborhoods[0].name}
           </span>
         </div>
@@ -178,7 +178,7 @@ export default function RadarChart({ neighborhoods }) {
             className="inline-block w-2.5 h-2.5 rounded-full"
             style={{ background: 'var(--color-sustainability)' }}
           />
-          <span className="text-[11px] text-[var(--text-muted)]">
+          <span className="text-[12px] text-[var(--text-muted)]">
             {neighborhoods[1].name}
           </span>
         </div>

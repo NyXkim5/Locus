@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { neighborhoods } from '../../data/neighborhoods'
 import useStore from '../../store/useStore'
 import ListingsCarousel from '../listings/ListingsCarousel'
+import { PRIORITIES } from '../../utils/priorities'
 
 function Dropdown({ label, value, options, onChange }) {
   const [open, setOpen] = useState(false)
@@ -22,7 +22,7 @@ function Dropdown({ label, value, options, onChange }) {
 
   return (
     <div ref={ref} className="relative inline-flex flex-col">
-      <span className="text-[11px] font-medium text-[var(--text-muted)] mb-1">{label}</span>
+      <span className="text-[12px] font-medium text-[var(--text-muted)] mb-1">{label}</span>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -224,7 +224,7 @@ function buildFilterContext(filters) {
   return parts.length ? `\n\nUser's search filters:\n${parts.join('\n')}` : ''
 }
 
-export default function AIAdvisor({ currentNeighborhood, listings = [], onResponse }) {
+export default function AIAdvisor({ currentNeighborhood, listings = [], onResponse, priorities = [] }) {
   const [input, setInput] = useState('')
   const [refineInput, setRefineInput] = useState('')
   const [response, setResponse] = useState(null)
@@ -296,7 +296,11 @@ Guidelines:
 - SUSTAINABILITY: When the user mentions sustainability, eco-friendly, carbon footprint, green living, bike infrastructure, or renewable energy, you MUST reference the Sustainability category scores and individual factors (Carbon Footprint, Green Transit Score, Bike Infrastructure, Renewable Energy, Green Space Coverage). Include sustainability-related metrics in your recommendations. Highlight how specific properties support a low-carbon lifestyle — proximity to bike lanes, transit stops, EV charging, solar panels, walkable errands. Compare sustainability scores across neighborhoods when useful.
 - REAL DATA ONLY: Never fabricate school names, ratings, statistics, or facts. Only reference real schools, real landmarks, and real amenities that exist in the area. If you are not confident a specific fact is accurate, describe it in general terms instead of making up numbers.
 - Score interpretation: 70+ is strong, 40-69 is moderate, below 40 is a red flag.
-- TONE: Be persuasive and enthusiastic. You are selling the buyer on each home. Use concrete details — nearby parks by name, walking distance to amenities, specific school names and stats, commute times to job centers. Make every explanation feel tailored and compelling.`
+- TONE: Be persuasive and enthusiastic. You are selling the buyer on each home. Use concrete details — nearby parks by name, walking distance to amenities, specific school names and stats, commute times to job centers. Make every explanation feel tailored and compelling.${
+  priorities.length > 0
+    ? `\n\nUser priorities: ${priorities.map(pid => PRIORITIES.find(p => p.id === pid)?.label).filter(Boolean).join(', ')}. Bias your analysis and recommendations toward these priorities.`
+    : ''
+}`
 
     // Build multi-turn contents: include prior history + new user message
     const priorHistory = useStore.getState().chatHistory
@@ -362,14 +366,19 @@ Guidelines:
               const partial = extractPartialAnalysis(fullText)
               if (partial) setStreamingText(partial)
             }
-          } catch {}
+          } catch { /* skip malformed SSE chunks */ }
         }
       }
 
       if (!fullText) throw new Error('No response received')
       setStreamingText('')
       const parsed = parseAIResponse(fullText)
-      const enriched = enrichListings(listings, parsed.recommendations)
+      let enriched = enrichListings(listings, parsed.recommendations)
+
+      // Fall back to raw listings when AI enrichment finds no matches
+      if (enriched.length === 0 && listings.length > 0) {
+        enriched = listings
+      }
 
       // Only store messages in history after successful response
       addChatMessage('user', displayLabel || text)
@@ -400,7 +409,8 @@ Guidelines:
     setError(null)
   }
 
-  const enrichedListings = response ? enrichListings(listings, response.recommendations) : []
+  const _enriched = response ? enrichListings(listings, response.recommendations) : []
+  const enrichedListings = _enriched.length === 0 && response && listings.length > 0 ? listings : _enriched
 
   return (
     <motion.div
@@ -419,7 +429,7 @@ Guidelines:
             </span>
           </div>
           {chatHistory.length > 0 && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] text-[11px] font-medium">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] text-[12px] font-medium">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
@@ -551,7 +561,7 @@ Guidelines:
               {/* Conversation thread — show prior exchanges */}
               {chatHistory.length > 2 && (
                 <div className="mt-5 mb-4 space-y-3">
-                  <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]">
+                  <span className="text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]">
                     Conversation History
                   </span>
                   {chatHistory.slice(0, -2).map((msg, i) => (
@@ -567,14 +577,14 @@ Guidelines:
                         }`}
                       >
                         {msg.role !== 'user' && (
-                          <span className="text-[10px] font-medium text-[var(--text-muted)] block mb-1">LOCUS AI</span>
+                          <span className="text-[12px] font-medium text-[var(--text-muted)] block mb-1">LOCUS AI</span>
                         )}
                         <p className="line-clamp-2">{msg.role === 'user' && msg.text.length > 120 ? msg.text.slice(0, 120) + '...' : msg.text}</p>
                       </div>
                     </div>
                   ))}
                   <div className="border-t border-[var(--border)] pt-1">
-                    <span className="text-[11px] text-[var(--text-muted)]">Latest response</span>
+                    <span className="text-[12px] text-[var(--text-muted)]">Latest response</span>
                   </div>
                 </div>
               )}

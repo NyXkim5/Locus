@@ -107,7 +107,7 @@ function ChallengePanelInner() {
         </div>
 
         <div className="mb-6">
-          <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-3">
+          <h4 className="text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-3">
             Data Sources
           </h4>
           <div className="space-y-2">
@@ -122,7 +122,7 @@ function ChallengePanelInner() {
                   </span>
                   <div>
                     <span className="text-[13px] text-[var(--text-primary)]">{source.name}</span>
-                    <span className="text-[11px] text-[var(--text-muted)] ml-2">
+                    <span className="text-[12px] text-[var(--text-muted)] ml-2">
                       weight: {(source.weight * 100).toFixed(0)}%
                     </span>
                   </div>
@@ -130,7 +130,7 @@ function ChallengePanelInner() {
                 <div className="flex items-center gap-2">
                   <span className="text-[13px] font-medium text-[var(--text-secondary)]">{source.value}</span>
                   {source.challenged && (
-                    <span className="text-[10px] text-[var(--accent)]">adjusted</span>
+                    <span className="text-[12px] text-[var(--accent)]">adjusted</span>
                   )}
                 </div>
               </div>
@@ -148,7 +148,7 @@ function ChallengePanelInner() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="challenge-input" className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2 block">
+          <label htmlFor="challenge-input" className="text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2 block">
             What's your experience?
           </label>
           <textarea
@@ -182,7 +182,7 @@ function ChallengePanelInner() {
         </div>
 
         <div className="mt-6 pt-4 border-t border-[var(--border)]">
-          <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2">
+          <h4 className="text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2">
             How recalculation works
           </h4>
           <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">

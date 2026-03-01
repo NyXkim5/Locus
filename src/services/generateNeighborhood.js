@@ -15,6 +15,7 @@ The JSON must follow this EXACT schema:
 {
   "name": "City Name",
   "coordinates": { "lat": <number>, "lng": <number> },
+  "biography": "2-3 sentence description of the city/neighborhood character, lifestyle, and appeal.",
   "categories": [
     {
       "label": "Sustainability",
@@ -52,7 +53,9 @@ CRITICAL RULES:
 9. The neutral frame format must be: "<Factor Name>: <score>"
 10. Return ONLY the JSON object, no markdown fences, no explanation`
 
-export async function generateNeighborhood(cityName, onProgress) {
+import { PRIORITIES } from '../utils/priorities'
+
+export async function generateNeighborhood(cityName, onProgress, priorities = []) {
   const id = toKebabCase(cityName)
 
   // Dedup guard: if already generated, return existing
@@ -75,7 +78,11 @@ export async function generateNeighborhood(cityName, onProgress) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SCHEMA_PROMPT }] },
           contents: [
-            { role: 'user', parts: [{ text: `Generate a complete neighborhood analysis for: ${cityName}` }] },
+            { role: 'user', parts: [{ text: `Generate a complete neighborhood analysis for: ${cityName}${
+              priorities.length > 0
+                ? `\n\nThe user's top priorities are: ${priorities.map(pid => PRIORITIES.find(p => p.id === pid)?.label).filter(Boolean).join(', ')}. Provide more detailed and differentiated scores for relevant factors.`
+                : ''
+            }` }] },
           ],
           generationConfig: { responseMimeType: 'application/json' },
         }),
@@ -147,6 +154,7 @@ export async function generateNeighborhood(cityName, onProgress) {
     id,
     name: parsed.name || cityName,
     coordinates: parsed.coordinates,
+    biography: parsed.biography || `AI-generated analysis for ${parsed.name || cityName}.`,
     overallScore,
     categories: parsed.categories,
     isGenerated: true,

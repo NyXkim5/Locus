@@ -1,11 +1,13 @@
 import { Component } from 'react'
-import { BrowserRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import InputPage from './pages/InputPage'
 import NeighborhoodPage from './pages/NeighborhoodPage'
 import ComparePage from './pages/ComparePage'
 import ChallengePanel from './components/challenge/ChallengePanel'
+import ProfilePanel from './components/profile/ProfilePanel'
+import InsightsPage from './pages/InsightsPage'
 import useStore from './store/useStore'
 
 // ── Error Boundary ──
@@ -78,10 +80,10 @@ function AnimatedRoutes() {
         className="min-h-screen"
       >
         <Routes location={location}>
-          <Route path="/" element={<Navigate to="/neighborhood/irvine" replace />} />
-          <Route path="/input" element={<InputPage />} />
+          <Route path="/" element={<InputPage />} />
           <Route path="/neighborhood/:id" element={<NeighborhoodPage />} />
           <Route path="/compare" element={<ComparePage />} />
+          <Route path="/insights" element={<InsightsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
@@ -134,6 +136,7 @@ function App() {
         <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
           <AnimatedRoutes />
           <ChallengePanel />
+          <ProfilePanel />
           <Toast />
         </div>
       </BrowserRouter>

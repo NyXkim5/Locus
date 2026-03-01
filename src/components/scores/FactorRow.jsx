@@ -6,7 +6,7 @@ import { getScoreColor } from '../../utils/scoreColor'
 
 export default function FactorRow({ factor, index, onChallenge }) {
   const framingMode = useStore((s) => s.framingMode)
-  const description = factor.frames[framingMode]
+  const description = factor.frames?.[framingMode] ?? ''
 
   return (
     <motion.div
@@ -46,7 +46,7 @@ export default function FactorRow({ factor, index, onChallenge }) {
         </motion.p>
       </AnimatePresence>
       {factor.userChallenged && (
-        <span className="text-[10px] text-[var(--accent)] mt-1 inline-block">
+        <span className="text-[12px] text-[var(--accent)] mt-1 inline-block">
           Score adjusted by your input
         </span>
       )}

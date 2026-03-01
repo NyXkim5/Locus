@@ -1,13 +1,5 @@
 import { motion } from 'framer-motion'
-
-function formatPrice(price) {
-  if (!price) return 'Price N/A'
-  if (price >= 1000000) {
-    const m = price / 1000000
-    return `$${m % 1 === 0 ? m.toFixed(0) : m.toFixed(2)}M`
-  }
-  return `$${(price / 1000).toFixed(0)}K`
-}
+import { formatPrice } from '../../utils/formatPrice'
 
 export default function ListingCard({ listing, index }) {
   const card = (
@@ -24,40 +16,47 @@ export default function ListingCard({ listing, index }) {
             src={listing.imgSrc}
             alt={listing.address}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[28px] opacity-20">{'\u2302'}</span>
+            <span className="text-[28px] opacity-40">{'\u2302'}</span>
           </div>
         )}
         <div className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] bg-[var(--bg-base)]/70 backdrop-blur-sm">
-          <span className="text-[10px] font-medium text-[var(--text-muted)]">{listing.type}</span>
+          <span className="text-[12px] font-medium text-[var(--text-muted)]">{listing.type}</span>
         </div>
         <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] bg-[var(--accent)]/20 backdrop-blur-sm">
-          <span className="text-[10px] font-semibold text-[var(--accent-hover)]">
-            {formatPrice(listing.price)}
+          <span className="text-[12px] font-semibold text-[var(--accent-hover)]">
+            {formatPrice(listing.price, listing.listingType)}
           </span>
         </div>
       </div>
 
       {/* Details */}
       <div className="p-3">
-        <p className="text-[13px] font-semibold text-[var(--text-primary)] truncate">
+        <p className="text-[14px] font-semibold text-[var(--text-primary)] truncate" title={listing.address}>
           {listing.address}
         </p>
 
-        <div className="flex items-center gap-2 mt-1.5 text-[11px] text-[var(--text-muted)]">
+        <div className="flex items-center gap-2 mt-1.5 text-[12px] text-[var(--text-muted)]">
           {listing.beds != null && <span>{listing.beds} bd</span>}
           {listing.baths != null && (
             <>
-              <span className="opacity-40">|</span>
+              <span className="opacity-50">|</span>
               <span>{listing.baths} ba</span>
             </>
           )}
           {listing.sqft != null && (
             <>
-              <span className="opacity-40">|</span>
+              <span className="opacity-50">|</span>
               <span>{listing.sqft.toLocaleString()} sqft</span>
+            </>
+          )}
+          {listing.rating != null && (
+            <>
+              <span className="opacity-50">|</span>
+              <span>&#9733; {listing.rating.toFixed(1)}</span>
             </>
           )}
         </div>

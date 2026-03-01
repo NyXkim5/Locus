@@ -4,14 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { neighborhoods, getAllNeighborhoods } from '../data/neighborhoods'
 import { generateNeighborhood } from '../services/generateNeighborhood'
 import useStore from '../store/useStore'
+import { PRIORITIES, computePersonalizedScore } from '../utils/priorities'
 
 export default function InputPage() {
+  const generatedNeighborhoods = useStore((s) => s.generatedNeighborhoods)
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(-1)
   const [generating, setGenerating] = useState(false)
   const [progressText, setProgressText] = useState('')
   const [genError, setGenError] = useState(null)
   const navigate = useNavigate()
+  const priorities = useStore((s) => s.priorities)
+  const togglePriority = useStore((s) => s.togglePriority)
   const listboxRef = useRef(null)
   const inputRef = useRef(null)
   const videoRef = useRef(null)
@@ -20,7 +24,8 @@ export default function InputPage() {
     if (videoRef.current) videoRef.current.playbackRate = 0.8
   }, [])
 
-  const allNeighborhoods = useMemo(() => getAllNeighborhoods(), [query]) // re-read on query change
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- generatedNeighborhoods triggers recompute when AI neighborhoods are added
+  const allNeighborhoods = useMemo(() => getAllNeighborhoods(), [generatedNeighborhoods])
 
   const results = useMemo(() => {
     if (!query.trim()) return []
@@ -38,21 +43,21 @@ export default function InputPage() {
   const isOpen = results.length > 0 || showGenerateOption
 
   const handleSelect = useCallback((id) => {
-    navigate(`/neighborhood/${id}`)
+    navigate(`/neighborhood/${id}`, { state: { showScore: true } })
   }, [navigate])
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     setGenerating(true)
     setGenError(null)
     setProgressText('Connecting to AI...')
     try {
-      const result = await generateNeighborhood(trimmedQuery, setProgressText)
+      const result = await generateNeighborhood(trimmedQuery, setProgressText, priorities)
       navigate(`/neighborhood/${result.id}`)
     } catch (err) {
       setGenError(err.message)
       setGenerating(false)
     }
-  }
+  }, [trimmedQuery, navigate, priorities])
 
   const handleKeyDown = useCallback((e) => {
     if (!isOpen) return
@@ -82,7 +87,7 @@ export default function InputPage() {
         setActiveIndex(-1)
         break
     }
-  }, [isOpen, activeIndex, results, handleSelect, showGenerateOption, trimmedQuery])
+  }, [isOpen, activeIndex, results, handleSelect, showGenerateOption, handleGenerate])
 
   const handleInputChange = (e) => {
     setQuery(e.target.value)
@@ -207,10 +212,10 @@ export default function InputPage() {
                     <span className="flex items-center gap-2">
                       {n.name}
                       {n.isGenerated && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] font-medium">AI</span>
+                        <span className="text-[12px] px-1.5 py-0.5 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] font-medium">AI</span>
                       )}
                     </span>
-                    <span className="text-[12px] text-[var(--text-muted)]">Score: {n.overallScore}</span>
+                    <span className="text-[12px] text-[var(--text-muted)]">Score: {priorities.length > 0 ? computePersonalizedScore(n.categories, priorities) : n.overallScore}</span>
                   </button>
                 ))}
                 {showGenerateOption && (
@@ -246,8 +251,31 @@ export default function InputPage() {
           )}
         </div>
 
+        {/* Priority Chips */}
+        <div className="mt-6">
+          <span className="text-[12px] text-[var(--text-muted)] block mb-2">What matters most?</span>
+          <div className="flex flex-wrap justify-center gap-2">
+            {PRIORITIES.map((p) => {
+              const active = priorities.includes(p.id)
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => togglePriority(p.id)}
+                  className={`px-3 py-1.5 text-[12px] rounded-[6px] border transition-all ${
+                    active
+                      ? 'border-[var(--accent)] bg-[var(--accent-muted)] text-[var(--accent)] font-medium'
+                      : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--text-primary)]'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
         {/* Suggestion Pills */}
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <span className="text-[12px] text-[var(--text-muted)] mr-1 self-center">Try:</span>
           {neighborhoods.map((n) => (
             <button

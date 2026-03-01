@@ -1,20 +1,12 @@
 import { motion } from 'framer-motion'
 import { getScoreColor, getScoreColorHex } from '../../utils/scoreColor'
+import { formatPrice } from '../../utils/formatPrice'
 
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)
   return `rgba(${r},${g},${b},${alpha})`
-}
-
-function formatPrice(price) {
-  if (!price) return 'Price N/A'
-  if (price >= 1000000) {
-    const m = price / 1000000
-    return `$${m % 1 === 0 ? m.toFixed(0) : m.toFixed(2)}M`
-  }
-  return `$${(price / 1000).toFixed(0)}K`
 }
 
 export default function EnhancedListingCard({ listing, animateMetrics }) {
@@ -28,10 +20,11 @@ export default function EnhancedListingCard({ listing, animateMetrics }) {
             alt={listing.address}
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[40px] opacity-20">{'\u2302'}</span>
+            <span className="text-[40px] opacity-40">{'\u2302'}</span>
           </div>
         )}
         <div className="absolute top-3 left-3 px-3 py-1.5 rounded-[6px] bg-[var(--bg-base)]/90 shadow-sm">
@@ -39,14 +32,14 @@ export default function EnhancedListingCard({ listing, animateMetrics }) {
         </div>
         <div className="absolute top-3 right-3 px-3 py-1.5 rounded-[6px] bg-[var(--accent)] shadow-sm">
           <span className="text-[16px] font-bold text-white">
-            {formatPrice(listing.price)}
+            {formatPrice(listing.price, listing.listingType)}
           </span>
         </div>
       </div>
 
       {/* Details */}
       <div className="p-5 flex flex-col flex-1">
-        <p className="text-[18px] font-semibold text-[var(--text-primary)] truncate">
+        <p className="text-[18px] font-semibold text-[var(--text-primary)] truncate" title={listing.address}>
           {listing.address}
         </p>
 
@@ -54,13 +47,13 @@ export default function EnhancedListingCard({ listing, animateMetrics }) {
           {listing.beds != null && <span>{listing.beds} bd</span>}
           {listing.baths != null && (
             <>
-              <span className="opacity-40">|</span>
+              <span className="opacity-50">|</span>
               <span>{listing.baths} ba</span>
             </>
           )}
           {listing.sqft != null && (
             <>
-              <span className="opacity-40">|</span>
+              <span className="opacity-50">|</span>
               <span>{listing.sqft.toLocaleString()} sqft</span>
             </>
           )}

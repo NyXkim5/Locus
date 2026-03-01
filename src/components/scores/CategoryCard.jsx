@@ -3,7 +3,7 @@ import useStore from '../../store/useStore'
 import FactorRow from './FactorRow'
 import { getScoreColor } from '../../utils/scoreColor'
 
-export default function CategoryCard({ categoryKey, category, neighborhoodId, onChallengeFactor }) {
+export default function CategoryCard({ categoryKey, category, neighborhoodId, onChallengeFactor, weight }) {
   const expandedCategory = useStore((s) => s.expandedCategory)
   const toggleCategory = useStore((s) => s.toggleCategory)
   const challengedFactors = useStore((s) => s.challengedFactors)
@@ -38,6 +38,11 @@ export default function CategoryCard({ categoryKey, category, neighborhoodId, on
             </svg>
           )}
           {category.label}
+          {weight > 1.0 && (
+            <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--accent-muted)] text-[var(--accent)] text-[12px] font-medium">
+              {weight}x
+            </span>
+          )}
         </span>
         <div className="flex items-center gap-2">
           <span

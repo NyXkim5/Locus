@@ -1,5 +1,38 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { estimateRoute, geocodeAddress } from '../../services/mapcnRouting'
+
+const MODE_OPTIONS = [
+  {
+    value: 'driving',
+    label: 'Driving',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 11l1.5-4.5A2 2 0 0 1 6.4 5h11.2a2 2 0 0 1 1.9 1.5L21 11v6a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-6z" />
+      </svg>
+    ),
+  },
+  {
+    value: 'transit',
+    label: 'Transit',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+        <path d="M4 6h16v10H4z" fill="none" />
+        <path d="M6 16v2M18 16v2M4 10h16M7 7v2M17 7v2" />
+      </svg>
+    ),
+  },
+  {
+    value: 'walking',
+    label: 'Walking',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+        <circle cx="12" cy="3" r="1.5" fill="none" />
+        <path d="M12 5v4M10 9l-3 6M14 9l3 6M10 15v4M14 15v4" />
+      </svg>
+    ),
+  },
+]
 
 export default function CommuteEstimator({ origin, mapRef }) {
   const [destination, setDestination] = useState('')
@@ -8,250 +41,267 @@ export default function CommuteEstimator({ origin, mapRef }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [open, setOpen] = useState(false)
-  const [modeOpen, setModeOpen] = useState(false)
+
+
   const rendererRef = useRef(null)
+  const inputRef = useRef(null)
+  const autocompleteRef = useRef(null)
+  const panelRef = useRef(null)
+  const destinationRef = useRef('')
 
-  const modeOptions = [
-    {
-      value: 'driving',
-      label: 'Driving',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 11l1.5-4.5A2 2 0 0 1 6.4 5h11.2a2 2 0 0 1 1.9 1.5L21 11v6a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-6z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        </svg>
-      ),
-    },
-    {
-      value: 'transit',
-      label: 'Transit',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 6h16v10H4z" stroke="currentColor" strokeWidth="1.2" fill="none" />
-          <path d="M6 16v2M18 16v2M4 10h16M7 7v2M17 7v2" stroke="currentColor" strokeWidth="1.2" />
-        </svg>
-      ),
-    },
-    {
-      value: 'walking',
-      label: 'Walking',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
-          <path d="M12 5v4M10 9l-3 6M14 9l3 6M10 15v4M14 15v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-  ]
+  // Keep a ref in sync so the auto-estimate callback always has latest destination
+  destinationRef.current = destination
 
-  const handleEstimate = async () => {
+  const clearRoute = useCallback(() => {
+    if (rendererRef.current) {
+      rendererRef.current.setMap(null)
+      rendererRef.current = null
+    }
+  }, [])
+
+  const runEstimate = useCallback(async (dest, travelMode) => {
+    if (!dest) return
     setLoading(true)
     setError(null)
     setResult(null)
     try {
-      const res = await estimateRoute(origin, destination, mode)
+      const res = await estimateRoute(origin, dest, travelMode)
       setResult(res)
 
-      // Attempt to render a route on the Google Map if available
+      // Render route on the Google Map
       try {
-        if (window.google && mapRef && mapRef.current) {
-          // clear previous renderer
-          if (rendererRef.current) {
-            rendererRef.current.setMap(null)
-            rendererRef.current = null
-          }
-
+        if (window.google && mapRef?.current) {
+          clearRoute()
           const originCoord = typeof origin === 'string' ? await geocodeAddress(origin) : origin
-          const destCoord = await geocodeAddress(destination)
-
+          const destCoord = await geocodeAddress(dest)
           const directionsService = new window.google.maps.DirectionsService()
-          const travelMode =
-            mode === 'walking'
-              ? window.google.maps.TravelMode.WALKING
-              : mode === 'transit'
-              ? window.google.maps.TravelMode.TRANSIT
-              : window.google.maps.TravelMode.DRIVING
-
-          const request = {
-            origin: new window.google.maps.LatLng(originCoord.lat, originCoord.lng),
-            destination: new window.google.maps.LatLng(destCoord.lat, destCoord.lng),
-            travelMode,
+          const travelModeMap = {
+            driving: window.google.maps.TravelMode.DRIVING,
+            transit: window.google.maps.TravelMode.TRANSIT,
+            walking: window.google.maps.TravelMode.WALKING,
           }
-
-          directionsService.route(request, (response, status) => {
-            if (status === window.google.maps.DirectionsStatus.OK) {
-              const renderer = new window.google.maps.DirectionsRenderer({
-                suppressMarkers: false,
-                map: mapRef.current,
-                polylineOptions: { strokeColor: '#6366f1', strokeWeight: 5, strokeOpacity: 0.95 },
-              })
-              renderer.setDirections(response)
-              rendererRef.current = renderer
+          directionsService.route(
+            {
+              origin: new window.google.maps.LatLng(originCoord.lat, originCoord.lng),
+              destination: new window.google.maps.LatLng(destCoord.lat, destCoord.lng),
+              travelMode: travelModeMap[travelMode] || travelModeMap.driving,
+            },
+            (response, status) => {
+              if (status === window.google.maps.DirectionsStatus.OK) {
+                const renderer = new window.google.maps.DirectionsRenderer({
+                  suppressMarkers: false,
+                  map: mapRef.current,
+                  polylineOptions: { strokeColor: '#6366f1', strokeWeight: 5, strokeOpacity: 0.95 },
+                })
+                renderer.setDirections(response)
+                rendererRef.current = renderer
+              }
             }
-          })
+          )
         }
-      } catch (err) {
-        // non-fatal: route rendering is best-effort
+      } catch {
+        // route rendering is best-effort
       }
     } catch (err) {
       setError(err.message || 'Estimate failed')
     } finally {
       setLoading(false)
     }
-  }
+  }, [origin, mapRef, clearRoute])
 
+  // Set up Google Places Autocomplete when the panel opens
   useEffect(() => {
-    // clear renderer when component unmounts
+    if (!open || !inputRef.current || !window.google?.maps?.places) return
+    if (autocompleteRef.current) return // already initialized
+
+    const ac = new window.google.maps.places.Autocomplete(inputRef.current, {
+      types: ['establishment', 'geocode'],
+      fields: ['formatted_address', 'name', 'geometry'],
+    })
+
+    // Bias toward the neighborhood's location
+    if (origin?.lat && origin?.lng) {
+      ac.setBounds(new window.google.maps.LatLngBounds(
+        new window.google.maps.LatLng(origin.lat - 0.15, origin.lng - 0.15),
+        new window.google.maps.LatLng(origin.lat + 0.15, origin.lng + 0.15)
+      ))
+      ac.setOptions({ strictBounds: false })
+    }
+
+    ac.addListener('place_changed', () => {
+      const place = ac.getPlace()
+      const addr = place?.formatted_address || place?.name || ''
+      if (addr) {
+        setDestination(addr)
+        destinationRef.current = addr
+        // Auto-estimate immediately after place selection
+        runEstimate(addr, mode)
+      }
+    })
+
+    autocompleteRef.current = ac
+  }, [open, origin, mode, runEstimate])
+
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
-      if (rendererRef.current) {
-        rendererRef.current.setMap(null)
-        rendererRef.current = null
+      clearRoute()
+      if (autocompleteRef.current) {
+        window.google?.maps?.event?.clearInstanceListeners(autocompleteRef.current)
+        autocompleteRef.current = null
       }
     }
-  }, [])
+  }, [clearRoute])
+
+  // Close panel on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => {
+      if (panelRef.current && !panelRef.current.contains(e.target)) {
+        // Don't close if clicking on pac-container (autocomplete dropdown)
+        if (e.target.closest('.pac-container')) return
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const handleModeSelect = (newMode) => {
+    setMode(newMode)
+    // Auto-estimate if destination is already filled
+    if (destinationRef.current) {
+      runEstimate(destinationRef.current, newMode)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && destination) {
+      runEstimate(destination, mode)
+    }
+  }
 
   return (
-    <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 1100 }}>
+    <div className="absolute top-3 right-3 z-[1100]" ref={panelRef}>
+      {/* Toggle button */}
       <button
-        aria-label="Toggle commute"
+        aria-label="Toggle commute estimator"
         onClick={() => setOpen((v) => !v)}
-        title="Commute"
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 12,
-          border: '1px solid var(--border, #e5e7eb)',
-          background: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
-          cursor: 'pointer',
-        }}
+        className={`
+          w-11 h-11 rounded-xl border border-[var(--border,#e5e7eb)]
+          bg-[var(--bg-base,white)] flex items-center justify-center
+          shadow-sm hover:shadow-md transition-all duration-200
+          ${open ? 'ring-2 ring-indigo-500/30' : ''}
+        `}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 11l1.5-4.5A2 2 0 0 1 6.4 5h11.2a2 2 0 0 1 1.9 1.5L21 11v6a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-6z" stroke="#111827" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary,#111827)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 11l1.5-4.5A2 2 0 0 1 6.4 5h11.2a2 2 0 0 1 1.9 1.5L21 11v6a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-6z" />
         </svg>
       </button>
 
-      {open && (
-        <div
-          style={{
-            width: 280,
-            marginTop: 8,
-            background: 'var(--bg-base, white)',
-            border: '1px solid var(--border, #e5e7eb)',
-            borderRadius: 10,
-            padding: 10,
-            boxShadow: '0 6px 22px rgba(0,0,0,0.08)',
-          }}
-        >
-          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Estimate Commute</div>
+      {/* Panel */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="w-[280px] mt-2 bg-[var(--bg-base,white)] border border-[var(--border,#e5e7eb)] rounded-xl p-3 shadow-lg"
+          >
+            <div className="text-[12px] font-bold text-[var(--text-primary,#111)] mb-2">
+              Estimate Commute
+            </div>
 
-          <input
-            aria-label="Destination address"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="Work address or lat,lng"
-            style={{ width: '100%', padding: '8px 10px', marginBottom: 8, borderRadius: 6, border: '1px solid var(--border)' }}
-          />
+            {/* Destination input with Places Autocomplete */}
+            <input
+              ref={inputRef}
+              aria-label="Destination address"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search a destination..."
+              className="w-full px-3 py-2 mb-2 rounded-lg border border-[var(--border,#e5e7eb)] bg-[var(--bg-surface,#fafafa)] text-[13px] text-[var(--text-primary,#111)] placeholder:text-[var(--text-muted,#9ca3af)] outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-150"
+            />
 
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <button
-                onClick={() => setModeOpen((v) => !v)}
-                style={{
-                  width: '100%',
-                  padding: '8px 10px',
-                  borderRadius: 6,
-                  border: '1px solid var(--border, #e5e7eb)',
-                  background: 'var(--bg-base, white)',
-                  fontSize: 13,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer',
-                  color: 'var(--text-primary, #111)',
-                }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16 }}>
-                    {modeOptions.find((o) => o.value === mode)?.icon}
-                  </span>
-                  {modeOptions.find((o) => o.value === mode)?.label}
-                </span>
-                <span style={{ fontSize: 10 }}>▼</span>
-              </button>
-
-              {modeOpen && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    marginTop: 4,
-                    background: 'var(--bg-base, white)',
-                    border: '1px solid var(--border, #e5e7eb)',
-                    borderRadius: 6,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    zIndex: 2000,
-                  }}
+            {/* Mode selector - pill buttons instead of dropdown */}
+            <div className="flex gap-1 mb-2">
+              {MODE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => handleModeSelect(opt.value)}
+                  aria-pressed={mode === opt.value}
+                  className={`
+                    flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[12px] font-medium
+                    transition-all duration-150 cursor-pointer border
+                    ${mode === opt.value
+                      ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                      : 'bg-[var(--bg-surface,#fafafa)] border-[var(--border,#e5e7eb)] text-[var(--text-muted,#6b7280)] hover:bg-[var(--bg-base,#f3f4f6)] hover:text-[var(--text-primary,#111)]'
+                    }
+                  `}
                 >
-                  {modeOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        setMode(option.value)
-                        setModeOpen(false)
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: 'none',
-                        background: mode === option.value ? '#f3f4f6' : 'transparent',
-                        borderBottom: option === modeOptions[modeOptions.length - 1] ? 'none' : '1px solid var(--border, #f3f4f6)',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        fontSize: 13,
-                        color: 'var(--text-primary, #111)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        borderRadius: option === modeOptions[0] ? '6px 6px 0 0' : option === modeOptions[modeOptions.length - 1] ? '0 0 6px 6px' : 0,
-                      }}
-                    >
-                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary, #111)' }}>
-                        {option.icon}
-                      </span>
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
+                  <span className="flex items-center justify-center w-4 h-4">{opt.icon}</span>
+                  <span className="hidden sm:inline">{opt.label}</span>
+                </button>
+              ))}
             </div>
 
-            <button
-              onClick={handleEstimate}
-              disabled={loading || !destination}
-              style={{ padding: '8px 10px', borderRadius: 6, background: '#6366f1', color: 'white', border: 'none', cursor: 'pointer' }}
-            >
-              {loading ? '…' : 'Estimate'}
-            </button>
-          </div>
-
-          {error && <div style={{ color: 'var(--danger, #ef4444)', fontSize: 12 }}>{error}</div>}
-
-          {result && (
-            <div style={{ marginTop: 6, fontSize: 13 }}>
-              <div style={{ fontWeight: 700 }}>{result.durationText}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{result.distanceText} • {result.mode}</div>
-              {result.mocked && (
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>Approximate estimate (no routing key)</div>
+            {/* Loading indicator */}
+            <AnimatePresence>
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="flex items-center gap-2 py-2"
+                >
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-[var(--border,#e5e7eb)] border-t-indigo-500 animate-spin" />
+                  <span className="text-[12px] text-[var(--text-muted,#9ca3af)]">Estimating...</span>
+                </motion.div>
               )}
-            </div>
-          )}
-        </div>
-      )}
+            </AnimatePresence>
+
+            {/* Error */}
+            <AnimatePresence>
+              {error && !loading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-[12px] text-[var(--danger,#ef4444)] py-1"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Result */}
+            <AnimatePresence>
+              {result && !loading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.15 }}
+                  className="mt-1 pt-2 border-t border-[var(--border,#f3f4f6)]"
+                >
+                  <div className="text-[15px] font-bold text-[var(--text-primary,#111)]">
+                    {result.durationText}
+                  </div>
+                  <div className="text-[12px] text-[var(--text-muted,#6b7280)] mt-0.5">
+                    {result.distanceText} &middot; {result.mode}
+                  </div>
+                  {result.mocked && (
+                    <div className="text-[12px] text-[var(--text-muted,#9ca3af)] mt-1.5 italic">
+                      Approximate estimate
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

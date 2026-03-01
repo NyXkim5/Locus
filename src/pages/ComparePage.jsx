@@ -6,12 +6,16 @@ import FramingToggle from '../components/framing/FramingToggle'
 import ScoreCircle from '../components/shared/ScoreCircle'
 import ScoreBar from '../components/shared/ScoreBar'
 import { getScoreColor } from '../utils/scoreColor'
+import { computePersonalizedScore } from '../utils/priorities'
 import RadarChart from '../components/scores/RadarChart'
 import BiographyComparison from '../components/comparison/BiographyComparison'
 import { useState } from 'react'
 
-function ComparisonColumn({ neighborhood }) {
+function ComparisonColumn({ neighborhood, priorities }) {
   const framingMode = useStore((s) => s.framingMode)
+  const score = priorities.length > 0
+    ? computePersonalizedScore(neighborhood.categories, priorities)
+    : neighborhood.overallScore
 
   return (
     <motion.div
@@ -24,8 +28,11 @@ function ComparisonColumn({ neighborhood }) {
       <div className="text-center mb-5">
         <h3 className="text-[15px] font-semibold mb-3">{neighborhood.name}</h3>
         <div className="flex justify-center">
-          <ScoreCircle score={neighborhood.overallScore} size="sm" />
+          <ScoreCircle score={score} size="sm" />
         </div>
+        {priorities.length > 0 && (
+          <span className="text-[12px] text-[var(--text-muted)] mt-1 block">Personalized</span>
+        )}
       </div>
 
       {/* Categories */}
@@ -60,7 +67,7 @@ function ComparisonColumn({ neighborhood }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="text-[11px] text-[var(--text-muted)] mt-2"
+                className="text-[12px] text-[var(--text-muted)] mt-2"
               >
                 {cat.factors[0]?.frames[framingMode]}
               </motion.p>
@@ -72,7 +79,7 @@ function ComparisonColumn({ neighborhood }) {
   )
 }
 
-function generateInsight(a, b) {
+function generateInsight(a, b, priorities) {
   const diffs = a.categories.map((cat, i) => ({
     label: cat.label,
     diff: (b.categories[i]?.score || 0) - cat.score,
@@ -88,9 +95,13 @@ function generateInsight(a, b) {
 
   const winner = biggest.diff > 0 ? b.name : a.name
 
-  const overallClause = a.overallScore === b.overallScore
-    ? `Both share the same composite score of ${a.overallScore}`
-    : `Overall, ${a.overallScore > b.overallScore ? a.name : b.name} has a higher composite score`
+  const scoreA = priorities.length > 0 ? computePersonalizedScore(a.categories, priorities) : a.overallScore
+  const scoreB = priorities.length > 0 ? computePersonalizedScore(b.categories, priorities) : b.overallScore
+  const scoreLabel = priorities.length > 0 ? 'personalized score' : 'composite score'
+
+  const overallClause = scoreA === scoreB
+    ? `Both share the same ${scoreLabel} of ${scoreA}`
+    : `Overall, ${scoreA > scoreB ? a.name : b.name} has a higher ${scoreLabel}`
 
   return `${winner} scores significantly higher on ${biggest.label} (${Math.max(biggest.aScore, biggest.bScore)} vs ${Math.min(biggest.aScore, biggest.bScore)}). ${overallClause}, but individual category differences may matter more for your priorities.`
 }
@@ -99,6 +110,7 @@ export default function ComparePage() {
   const comparisonIds = useStore((s) => s.comparisonIds)
   const addToComparison = useStore((s) => s.addToComparison)
   const removeFromComparison = useStore((s) => s.removeFromComparison)
+  const priorities = useStore((s) => s.priorities)
   const [showPicker, setShowPicker] = useState(false)
 
   const comparedNeighborhoods = comparisonIds
@@ -147,11 +159,11 @@ export default function ComparePage() {
               <button
                 onClick={() => removeFromComparison(n.id)}
                 aria-label={`Remove ${n.name} from comparison`}
-                className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--score-low)] hover:border-[var(--score-low)] transition-colors text-[12px]"
+                className="absolute -top-2 -right-2 z-10 w-8 h-8 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--score-low)] hover:border-[var(--score-low)] transition-colors text-[12px]"
               >
                 ×
               </button>
-              <ComparisonColumn neighborhood={n} />
+              <ComparisonColumn neighborhood={n} priorities={priorities} />
             </div>
           ))}
 
@@ -205,11 +217,11 @@ export default function ComparePage() {
             transition={{ delay: 0.4 }}
             className="mt-8 p-4 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[10px]"
           >
-            <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2">
+            <h4 className="text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)] mb-2">
               Key Differences
             </h4>
             <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-              {generateInsight(comparedNeighborhoods[0], comparedNeighborhoods[1])}
+              {generateInsight(comparedNeighborhoods[0], comparedNeighborhoods[1], priorities)}
             </p>
           </motion.div>
         )}
@@ -272,13 +284,13 @@ export default function ComparePage() {
                   <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75" />
                 </svg>
                 <div>
-                  <h4 className="text-[11px] font-medium uppercase tracking-[0.04em] mb-1.5" style={{ color: 'var(--score-high)' }}>
+                  <h4 className="text-[12px] font-medium uppercase tracking-[0.04em] mb-1.5" style={{ color: 'var(--score-high)' }}>
                     Carbon Savings Insight
                   </h4>
                   <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
                     Choosing <strong>{greener.name}</strong> over {greener === a ? b.name : a.name} could save an estimated <strong style={{ color: 'var(--score-high)' }}>{co2Saved} tons of CO₂ per year</strong> based on differences in carbon footprint ({carbonA} vs {carbonB}), green transit ({transitA} vs {transitB}), and bike infrastructure ({bikeA} vs {bikeB}) scores.
                   </p>
-                  <p className="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">
+                  <p className="text-[12px] text-[var(--text-muted)] mt-2 leading-relaxed">
                     Estimate based on EPA household emissions data — each sustainability score point corresponds to approximately 0.08 metric tons CO₂/year, derived from the national average household footprint of 8.1 metric tons mapped across a 0–100 sustainability scale.
                   </p>
                 </div>
