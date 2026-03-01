@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
 import CBGS_GEOJSON from '../../data/irvine_cbgs.json'
 import CBG_SCORES from '../../data/cbg_scores.json'
+import CommuteEstimator from './CommuteEstimator'
 
 function scoreToColor(score) {
   if (score == null) return '#94a3b8'
@@ -301,6 +302,8 @@ export default function MapPlaceholder({ name, coordinates }) {
           />
         </GoogleMap>
       </LoadScript>
+
+      <CommuteEstimator origin={coordinates} mapRef={mapRef} />
 
       <div
         style={{
