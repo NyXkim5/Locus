@@ -1,16 +1,59 @@
-# React + Vite
+# Locus (Vite + React + Vercel Functions)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This app is configured for Vercel deployment with serverless API routes so sensitive keys stay server-side.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies:
+   `npm install`
+2. Copy env template:
+   `cp .env.example .env`
+3. Fill in `.env` values.
+4. Start dev server:
+   `npm run dev`
 
-## React Compiler
+## Environment variables
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Client-side (visible in browser bundle)
+- `VITE_GOOGLE_MAPS_API_KEY`
 
-## Expanding the ESLint configuration
+Use this only for Google Maps JS SDK, and lock it down with:
+- HTTP referrer restrictions (`https://your-domain/*`, preview domain, localhost)
+- API restrictions (only APIs the UI needs)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Server-side (keep secret)
+- `GEMINI_API_KEY`
+- `RAPIDAPI_KEY`
+- `GOOGLE_MAPS_SERVER_API_KEY`
+- `MAPCN_API_KEY` (optional)
+
+These are used by:
+- `/api/gemini`
+- `/api/listings`
+- `/api/geocode`
+- `/api/route`
+
+## Deploy to Vercel
+
+1. Push repo to GitHub.
+2. Import project in Vercel.
+3. Framework preset: `Vite`.
+4. Build command: `npm run build`.
+5. Output directory: `dist`.
+6. Add environment variables in Vercel Project Settings:
+   - `VITE_GOOGLE_MAPS_API_KEY`
+   - `GEMINI_API_KEY`
+   - `RAPIDAPI_KEY`
+   - `GOOGLE_MAPS_SERVER_API_KEY`
+   - `MAPCN_API_KEY` (optional)
+7. Deploy.
+
+`vercel.json` already includes:
+- SPA rewrite for React Router routes.
+- Function max duration of 60 seconds.
+
+## Security checklist
+
+- Never commit real `.env` values.
+- Rotate any keys that were previously exposed in client-side `VITE_*` vars.
+- Keep RapidAPI and Gemini keys server-only.

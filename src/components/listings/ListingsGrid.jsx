@@ -158,7 +158,7 @@ export default function ListingsGrid({
       {activeError && activeError.includes('RAPIDAPI_KEY') && (
         <div className="rounded-[10px] border border-dashed border-[var(--border)] p-6 text-center">
           <p className="text-[13px] text-[var(--text-muted)]">
-            Add <span className="font-mono text-[var(--text-secondary)]">VITE_RAPIDAPI_KEY</span> to your .env to show real listings
+            Missing server API key. Set <span className="font-mono text-[var(--text-secondary)]">RAPIDAPI_KEY</span> in your Vercel project environment variables.
           </p>
         </div>
       )}

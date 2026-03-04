@@ -1,6 +1,3 @@
-const API_HOST = 'realtor-search.p.rapidapi.com'
-const AIRBNB_HOST = 'airbnb13.p.rapidapi.com'
-
 function toNum(val) {
   if (typeof val === 'number' && !isNaN(val)) return val
   if (typeof val === 'string') { const n = parseFloat(val); if (!isNaN(n)) return n }
@@ -61,7 +58,9 @@ function resolveLocation(neighborhoodId) {
     const raw = localStorage.getItem('locus_generated_neighborhoods')
     const generated = raw ? JSON.parse(raw) : {}
     if (generated[neighborhoodId]) return `city:${generated[neighborhoodId].name}`
-  } catch {}
+  } catch {
+    // localStorage unavailable or malformed
+  }
   return null
 }
 
@@ -116,36 +115,33 @@ function friendlyApiError(status, body, apiName) {
 // ─── Buy Listings ────────────────────────────────────────
 
 export async function fetchListings(neighborhoodId, { signal } = {}) {
-  const apiKey = import.meta.env.VITE_RAPIDAPI_KEY
-  if (!apiKey) throw new Error('Missing VITE_RAPIDAPI_KEY — add it to your .env file to fetch listings.')
-
   const cached = getCached(neighborhoodId)
   if (cached) return cached
 
   const location = resolveLocation(neighborhoodId)
   if (!location) return []
 
-  const result = realtorPending.then(() => _fetchBuy(neighborhoodId, location, apiKey, 2, signal))
+  const result = realtorPending.then(() => _fetchBuy(neighborhoodId, location, 2, signal))
   realtorPending = result.catch(() => {})
   return result
 }
 
-async function _fetchBuy(neighborhoodId, location, apiKey, retries = 2, signal) {
-  const params = new URLSearchParams({ location, limit: '200', offset: '0' })
+async function _fetchBuy(neighborhoodId, location, retries = 2, signal) {
+  const params = new URLSearchParams({ type: 'buy', location })
 
   const res = await fetch(
-    `https://${API_HOST}/properties/search-buy?${params}`,
-    { headers: { 'x-rapidapi-key': apiKey, 'x-rapidapi-host': API_HOST }, signal }
+    `/api/listings?${params}`,
+    { signal }
   )
 
   if (res.status === 429 && retries > 0) {
     await new Promise((r) => setTimeout(r, 1500 * (3 - retries)))
-    return _fetchBuy(neighborhoodId, location, apiKey, retries - 1, signal)
+    return _fetchBuy(neighborhoodId, location, retries - 1, signal)
   }
 
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(friendlyApiError(res.status, body, 'Listings'))
+    const body = await res.json().catch(() => null)
+    throw new Error(body?.error || friendlyApiError(res.status, 'Unknown error', 'Listings'))
   }
 
   const json = await res.json()
@@ -157,36 +153,33 @@ async function _fetchBuy(neighborhoodId, location, apiKey, retries = 2, signal) 
 // ─── Rental Listings ─────────────────────────────────────
 
 export async function fetchRentals(neighborhoodId, { signal } = {}) {
-  const apiKey = import.meta.env.VITE_RAPIDAPI_KEY
-  if (!apiKey) throw new Error('Missing VITE_RAPIDAPI_KEY — add it to your .env file to fetch listings.')
-
   const cached = getCached(`rent_${neighborhoodId}`)
   if (cached) return cached
 
   const location = resolveLocation(neighborhoodId)
   if (!location) return []
 
-  const result = realtorPending.then(() => _fetchRent(neighborhoodId, location, apiKey, 2, signal))
+  const result = realtorPending.then(() => _fetchRent(neighborhoodId, location, 2, signal))
   realtorPending = result.catch(() => {})
   return result
 }
 
-async function _fetchRent(neighborhoodId, location, apiKey, retries = 2, signal) {
-  const params = new URLSearchParams({ location, limit: '200', offset: '0' })
+async function _fetchRent(neighborhoodId, location, retries = 2, signal) {
+  const params = new URLSearchParams({ type: 'rent', location })
 
   const res = await fetch(
-    `https://${API_HOST}/properties/search-rent?${params}`,
-    { headers: { 'x-rapidapi-key': apiKey, 'x-rapidapi-host': API_HOST }, signal }
+    `/api/listings?${params}`,
+    { signal }
   )
 
   if (res.status === 429 && retries > 0) {
     await new Promise((r) => setTimeout(r, 1500 * (3 - retries)))
-    return _fetchRent(neighborhoodId, location, apiKey, retries - 1, signal)
+    return _fetchRent(neighborhoodId, location, retries - 1, signal)
   }
 
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(friendlyApiError(res.status, body, 'Rental'))
+    const body = await res.json().catch(() => null)
+    throw new Error(body?.error || friendlyApiError(res.status, 'Unknown error', 'Rental'))
   }
 
   const json = await res.json()
@@ -198,9 +191,6 @@ async function _fetchRent(neighborhoodId, location, apiKey, retries = 2, signal)
 // ─── Airbnb Listings ─────────────────────────────────────
 
 export async function fetchAirbnbs(neighborhoodId, { signal } = {}) {
-  const apiKey = import.meta.env.VITE_RAPIDAPI_KEY
-  if (!apiKey) throw new Error('Missing VITE_RAPIDAPI_KEY — add it to your .env file to fetch listings.')
-
   const cached = getCached(`airbnb_${neighborhoodId}`)
   if (cached) return cached
 
@@ -209,12 +199,12 @@ export async function fetchAirbnbs(neighborhoodId, { signal } = {}) {
 
   const cityName = location.replace(/^city:/, '')
 
-  const result = airbnbPending.then(() => _fetchAirbnb(neighborhoodId, cityName, apiKey, 2, signal))
+  const result = airbnbPending.then(() => _fetchAirbnb(neighborhoodId, cityName, 2, signal))
   airbnbPending = result.catch(() => {})
   return result
 }
 
-async function _fetchAirbnb(neighborhoodId, cityName, apiKey, retries = 2, signal) {
+async function _fetchAirbnb(neighborhoodId, cityName, retries = 2, signal) {
   // Next Friday → Sunday (or next week's if today is Friday)
   const checkin = new Date()
   const daysTillFriday = (5 - checkin.getDay() + 7) % 7
@@ -223,27 +213,26 @@ async function _fetchAirbnb(neighborhoodId, cityName, apiKey, retries = 2, signa
   checkout.setDate(checkout.getDate() + 2)
 
   const params = new URLSearchParams({
+    type: 'airbnb',
     location: cityName,
     checkin: checkin.toISOString().split('T')[0],
     checkout: checkout.toISOString().split('T')[0],
     adults: '2',
-    page: '1',
-    currency: 'USD',
   })
 
   const res = await fetch(
-    `https://${AIRBNB_HOST}/search-location?${params}`,
-    { headers: { 'x-rapidapi-key': apiKey, 'x-rapidapi-host': AIRBNB_HOST }, signal }
+    `/api/listings?${params}`,
+    { signal }
   )
 
   if (res.status === 429 && retries > 0) {
     await new Promise((r) => setTimeout(r, 1500 * (3 - retries)))
-    return _fetchAirbnb(neighborhoodId, cityName, apiKey, retries - 1, signal)
+    return _fetchAirbnb(neighborhoodId, cityName, retries - 1, signal)
   }
 
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(friendlyApiError(res.status, body, 'Airbnb'))
+    const body = await res.json().catch(() => null)
+    throw new Error(body?.error || friendlyApiError(res.status, 'Unknown error', 'Airbnb'))
   }
 
   const json = await res.json()

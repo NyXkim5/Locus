@@ -135,37 +135,6 @@ function parseAIResponse(rawText) {
   }
 }
 
-function extractPartialAnalysis(partialJson) {
-  const marker = '"analysis"'
-  const idx = partialJson.indexOf(marker)
-  if (idx === -1) return null
-  const colonIdx = partialJson.indexOf(':', idx + marker.length)
-  if (colonIdx === -1) return null
-  const quoteIdx = partialJson.indexOf('"', colonIdx + 1)
-  if (quoteIdx === -1) return null
-  let text = ''
-  let i = quoteIdx + 1
-  let escaped = false
-  while (i < partialJson.length) {
-    const ch = partialJson[i]
-    if (escaped) {
-      if (ch === 'n') text += '\n'
-      else if (ch === '"') text += '"'
-      else if (ch === '\\') text += '\\'
-      else text += ch
-      escaped = false
-    } else if (ch === '\\') {
-      escaped = true
-    } else if (ch === '"') {
-      break
-    } else {
-      text += ch
-    }
-    i++
-  }
-  return text || null
-}
-
 function enrichListings(listings, recommendations) {
   if (!recommendations?.length || !listings?.length) return []
 
@@ -253,13 +222,6 @@ export default function AIAdvisor({ currentNeighborhood, listings = [], onRespon
     setResponse(null)
     setStreamingText('')
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-      setError('Add VITE_GEMINI_API_KEY to your .env file to enable AI insights.')
-      setLoading(false)
-      return
-    }
-
     const data = summarizeForAI([currentNeighborhood])
     const listingsSummary = summarizeListings(listings)
     const filterContext = buildFilterContext(filters)
@@ -315,14 +277,14 @@ Guidelines:
     try {
       const fetchWithRetry = async (retries = 2) => {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+          '/api/gemini',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              systemInstruction: { parts: [{ text: systemPrompt }] },
+              systemPrompt,
               contents,
-              generationConfig: { responseMimeType: 'application/json' },
+              responseMimeType: 'application/json',
             }),
           }
         )
@@ -334,41 +296,15 @@ Guidelines:
 
         if (!res.ok) {
           const body = await res.json().catch(() => null)
-          throw new Error(body?.error?.message || `API request failed (${res.status})`)
+          throw new Error(body?.error || `API request failed (${res.status})`)
         }
 
         return res
       }
 
       const res = await fetchWithRetry()
-
-      // Stream response and extract analysis progressively
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let sseBuffer = ''
-      let fullText = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        sseBuffer += decoder.decode(value, { stream: true })
-        const lines = sseBuffer.split('\n')
-        sseBuffer = lines.pop()
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const payload = line.slice(6).trim()
-          if (!payload || payload === '[DONE]') continue
-          try {
-            const event = JSON.parse(payload)
-            const chunk = event.candidates?.[0]?.content?.parts?.[0]?.text
-            if (chunk) {
-              fullText += chunk
-              const partial = extractPartialAnalysis(fullText)
-              if (partial) setStreamingText(partial)
-            }
-          } catch { /* skip malformed SSE chunks */ }
-        }
-      }
+      const payload = await res.json()
+      const fullText = payload?.text || ''
 
       if (!fullText) throw new Error('No response received')
       setStreamingText('')

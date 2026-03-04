@@ -62,21 +62,16 @@ export async function generateNeighborhood(cityName, onProgress, priorities = []
   const existing = useStore.getState().generatedNeighborhoods[id]
   if (existing) return existing
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-  if (!apiKey) {
-    throw new Error('Add VITE_GEMINI_API_KEY to your .env file to generate neighborhood analyses.')
-  }
-
   onProgress?.('Connecting to AI...')
 
   const fetchWithRetry = async (retries = 2) => {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+      '/api/gemini',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SCHEMA_PROMPT }] },
+          systemPrompt: SCHEMA_PROMPT,
           contents: [
             { role: 'user', parts: [{ text: `Generate a complete neighborhood analysis for: ${cityName}${
               priorities.length > 0
@@ -84,7 +79,7 @@ export async function generateNeighborhood(cityName, onProgress, priorities = []
                 : ''
             }` }] },
           ],
-          generationConfig: { responseMimeType: 'application/json' },
+          responseMimeType: 'application/json',
         }),
       }
     )
@@ -97,7 +92,7 @@ export async function generateNeighborhood(cityName, onProgress, priorities = []
 
     if (!res.ok) {
       const body = await res.json().catch(() => null)
-      throw new Error(body?.error?.message || `API request failed (${res.status})`)
+      throw new Error(body?.error || `API request failed (${res.status})`)
     }
 
     return res
@@ -105,33 +100,8 @@ export async function generateNeighborhood(cityName, onProgress, priorities = []
 
   onProgress?.(`Generating analysis for ${cityName}...`)
   const res = await fetchWithRetry()
-
-  // Stream response
-  const reader = res.body.getReader()
-  const decoder = new TextDecoder()
-  let sseBuffer = ''
-  let fullText = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    sseBuffer += decoder.decode(value, { stream: true })
-    const lines = sseBuffer.split('\n')
-    sseBuffer = lines.pop()
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue
-      const payload = line.slice(6).trim()
-      if (!payload || payload === '[DONE]') continue
-      try {
-        const event = JSON.parse(payload)
-        const chunk = event.candidates?.[0]?.content?.parts?.[0]?.text
-        if (chunk) {
-          fullText += chunk
-          onProgress?.(`Generating analysis for ${cityName}...`)
-        }
-      } catch {}
-    }
-  }
+  const payload = await res.json()
+  const fullText = payload?.text || ''
 
   if (!fullText) throw new Error('No response received from AI')
 
